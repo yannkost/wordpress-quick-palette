@@ -1,0 +1,93 @@
+/**
+ * WP Quick Palette - Base Styles
+ * CSS custom properties (all themes + density) and Admin Bar icon.
+ *
+ * @package WPQP
+ */
+
+/* ==========================================================================
+   CSS Custom Properties (Light Theme Default)
+   ========================================================================== */
+
+:root, #wpqp-palette-root {
+	/* Light theme colors - inspired by Craft CMS palette */
+	--wpqp-bg: #ffffff;
+	--wpqp-bg-secondary: #f8f9fb;
+	--wpqp-text: #3f4d5a;
+	--wpqp-text-muted: #8496ab;
+	--wpqp-border: #cdd8e4;
+	--wpqp-border-light: #e3eaf0;
+	--wpqp-input-bg: #ffffff;
+	--wpqp-input-border: #cdd8e4;
+	--wpqp-hover: #f8f9fb;
+	--wpqp-selected: #e8f0fe;
+	--wpqp-shadow: rgba(0, 0, 0, 0.08);
+	--wpqp-shadow-lg: rgba(0, 0, 0, 0.15);
+	--wpqp-accent: #0d78f2;
+	--wpqp-backdrop: rgba(0, 0, 0, 0.4);
+
+	/* Badge colors */
+	--wpqp-type-color: #8496ab;
+	--wpqp-status-bg: #d4f1e8;
+	--wpqp-status-color: #0e8449;
+
+	/* Spacing (normal density default) */
+	--wpqp-spacing-xs: 4px;
+	--wpqp-spacing-sm: 8px;
+	--wpqp-spacing-md: 12px;
+	--wpqp-spacing-lg: 16px;
+	--wpqp-spacing-xl: 24px;
+
+	/* Typography */
+	--wpqp-font-size-xs: 11px;
+	--wpqp-font-size-sm: 12px;
+	--wpqp-font-size-base: 14px;
+	--wpqp-font-size-lg: 15px;
+
+	/* Layout */
+	--wpqp-item-height: auto;
+	--wpqp-border-radius: 4px;
+	--wpqp-border-radius-lg: 6px;
+}
+
+/* Dark Theme */
+:root[data-theme="dark"],
+#wpqp-palette-root[data-theme="dark"],
+#wpqp-palette-root[data-theme="auto"][data-resolved-theme="dark"] {
+	--wpqp-bg: #38434e;
+	--wpqp-bg-secondary: #2e3840;
+	--wpqp-text: #e8eaed;
+	--wpqp-text-muted: #b8c4ce;
+	--wpqp-border: #525a62;
+	--wpqp-border-light: #434648;
+	--wpqp-input-bg: #2a333c;
+	--wpqp-input-border: #525a62;
+	--wpqp-hover: #2e3840;
+	--wpqp-selected: #3a4452;
+	--wpqp-shadow: rgba(0, 0, 0, 0.3);
+	--wpqp-shadow-lg: rgba(0, 0, 0, 0.5);
+	--wpqp-accent: #4da6ff;
+	--wpqp-backdrop: rgba(0, 0, 0, 0.6);
+	--wpqp-type-color: #b8c4ce;
+	--wpqp-status-bg: #064e3b;
+	--wpqp-status-color: #6ee7b7;
+}
+
+/* Compact Density */
+:root[data-density="compact"],
+#wpqp-palette-root[data-density="compact"] {
+	--wpqp-spacing-sm: 6px;
+	--wpqp-spacing-md: 8px;
+	--wpqp-spacing-lg: 12px;
+	--wpqp-spacing-xl: 16px;
+	--wpqp-font-size-base: 13px;
+}
+
+/* ==========================================================================
+   Admin Bar Icon
+   ========================================================================== */
+
+#wp-admin-bar-wpqp-admin-bar-icon .ab-icon:before {
+	content: "\f179";
+	top: 2px;
+}

@@ -1,0 +1,375 @@
+/**
+ * WP Quick Palette - Palette Styles
+ * Overlay, backdrop, panel, title bar, search tabs, search input,
+ * and results container.
+ *
+ * @package WPQP
+ */
+
+/* ==========================================================================
+   Palette Overlay
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 999999;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	padding: 5vh 16px;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+#wpqp-palette-root .wpqp-overlay.wpqp-open {
+	display: flex;
+	opacity: 1;
+}
+
+/* Backdrop */
+#wpqp-palette-root .wpqp-backdrop {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: var(--wpqp-backdrop);
+}
+
+/* Panel */
+#wpqp-palette-root .wpqp-panel {
+	position: relative;
+	width: 90%;
+	max-width: 720px;
+	max-height: 70vh;
+	background: var(--wpqp-bg);
+	border-radius: var(--wpqp-border-radius-lg);
+	box-shadow: 0 8px 40px var(--wpqp-shadow-lg), 0 0 0 1px var(--wpqp-border);
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	transform: translateY(-8px);
+	transition: transform 0.2s ease;
+}
+
+#wpqp-palette-root .wpqp-overlay.wpqp-open .wpqp-panel {
+	transform: translateY(0);
+}
+
+/* ==========================================================================
+   Title Bar
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-title-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: var(--wpqp-spacing-md) var(--wpqp-spacing-lg);
+	border-bottom: 1px solid var(--wpqp-border);
+	background: var(--wpqp-bg-secondary);
+}
+
+#wpqp-palette-root .wpqp-title-left {
+	display: flex;
+	align-items: center;
+	gap: var(--wpqp-spacing-sm);
+}
+
+#wpqp-palette-root .wpqp-title-text {
+	font-size: var(--wpqp-font-size-base);
+	font-weight: 700;
+	color: var(--wpqp-text);
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+#wpqp-palette-root .wpqp-site-selector {
+	padding: 4px 8px;
+	font-size: var(--wpqp-font-size-sm);
+	color: var(--wpqp-text);
+	background: var(--wpqp-bg);
+	border: 1px solid var(--wpqp-border);
+	border-radius: var(--wpqp-border-radius);
+	cursor: pointer;
+}
+
+#wpqp-palette-root .wpqp-title-right {
+	display: flex;
+	align-items: center;
+	gap: var(--wpqp-spacing-sm);
+}
+
+#wpqp-palette-root .wpqp-shortcut-badge {
+	display: inline-block;
+	padding: 2px 8px;
+	font-size: var(--wpqp-font-size-xs);
+	font-weight: 500;
+	color: var(--wpqp-text-muted);
+	background: var(--wpqp-bg);
+	border: 1px solid var(--wpqp-border);
+	border-radius: var(--wpqp-border-radius);
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+	white-space: nowrap;
+}
+
+#wpqp-palette-root .wpqp-close-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--wpqp-text-muted);
+	cursor: pointer;
+	border-radius: var(--wpqp-border-radius);
+	transition: color 0.15s ease, background 0.15s ease;
+}
+
+#wpqp-palette-root .wpqp-close-btn:hover {
+	color: var(--wpqp-text);
+	background: var(--wpqp-hover);
+}
+
+#wpqp-palette-root .wpqp-close-btn svg {
+	width: 16px;
+	height: 16px;
+}
+
+/* ==========================================================================
+   Search Tabs (Pro)
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-search-tabs {
+	display: flex;
+	gap: 0;
+	padding: 0 var(--wpqp-spacing-lg);
+	background: var(--wpqp-bg-secondary);
+	border-bottom: 1px solid var(--wpqp-border);
+}
+
+#wpqp-palette-root .wpqp-search-tab {
+	flex: 1;
+	padding: var(--wpqp-spacing-sm) var(--wpqp-spacing-md);
+	font-size: var(--wpqp-font-size-sm);
+	font-weight: 600;
+	color: var(--wpqp-text-muted);
+	background: none;
+	border: none;
+	border-bottom: 2px solid transparent;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	text-align: center;
+}
+
+#wpqp-palette-root .wpqp-search-tab:hover:not(:disabled) {
+	color: var(--wpqp-text);
+}
+
+#wpqp-palette-root .wpqp-search-tab--active {
+	color: var(--wpqp-accent);
+	border-bottom-color: var(--wpqp-accent);
+}
+
+#wpqp-palette-root .wpqp-search-tab:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+#wpqp-palette-root .wpqp-pro-badge {
+	display: inline-block;
+	padding: 1px 4px;
+	font-size: 9px;
+	font-weight: 700;
+	color: #fff;
+	background: var(--wpqp-accent);
+	border-radius: 2px;
+	margin-left: 4px;
+	text-transform: uppercase;
+}
+
+/* ==========================================================================
+   Search Input
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-input-wrap {
+	display: flex;
+	align-items: center;
+	margin: var(--wpqp-spacing-md) var(--wpqp-spacing-lg);
+	border: 1px solid var(--wpqp-input-border);
+	border-radius: var(--wpqp-border-radius-lg);
+	background: var(--wpqp-input-bg);
+	transition: border-color 0.15s ease;
+}
+
+#wpqp-palette-root .wpqp-input-wrap:focus-within {
+	border-color: var(--wpqp-accent);
+}
+
+#wpqp-palette-root .wpqp-input {
+	flex: 1;
+	padding: 10px var(--wpqp-spacing-md);
+	font-size: var(--wpqp-font-size-lg);
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	color: var(--wpqp-text);
+	background: transparent;
+	border: none;
+	outline: none;
+	box-shadow: none !important;
+	min-height: 0;
+	line-height: 1.4;
+}
+
+#wpqp-palette-root .wpqp-input::placeholder {
+	color: var(--wpqp-text-muted);
+}
+
+#wpqp-palette-root .wpqp-input-actions {
+	display: flex;
+	align-items: center;
+	gap: var(--wpqp-spacing-sm);
+	padding-right: var(--wpqp-spacing-sm);
+}
+
+#wpqp-palette-root .wpqp-search-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--wpqp-text-muted);
+	cursor: pointer;
+	border-radius: var(--wpqp-border-radius);
+	transition: color 0.15s ease, background 0.15s ease;
+}
+
+#wpqp-palette-root .wpqp-search-btn:hover {
+	color: var(--wpqp-accent);
+	background: var(--wpqp-hover);
+}
+
+#wpqp-palette-root .wpqp-search-btn svg {
+	width: 16px;
+	height: 16px;
+}
+
+#wpqp-palette-root .wpqp-save-search-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--wpqp-text-muted);
+	cursor: pointer;
+	border-radius: var(--wpqp-border-radius);
+	transition: color 0.15s ease, background 0.15s ease;
+}
+
+#wpqp-palette-root .wpqp-save-search-btn:hover {
+	color: #f59e0b;
+	background: var(--wpqp-hover);
+}
+
+#wpqp-palette-root .wpqp-save-search-btn svg {
+	width: 16px;
+	height: 16px;
+}
+
+#wpqp-palette-root .wpqp-enter-hint {
+	padding: 0 var(--wpqp-spacing-sm);
+	font-size: var(--wpqp-font-size-xs);
+	color: var(--wpqp-text-muted);
+	white-space: nowrap;
+	opacity: 0.7;
+}
+
+/* ==========================================================================
+   Results Container
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-results {
+	flex: 1;
+	min-height: 0;
+	padding: 0;
+	display: none;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+#wpqp-palette-root .wpqp-results-scroll {
+	overflow-y: auto;
+	overflow-x: hidden;
+	flex: 1;
+	min-height: 0;
+}
+
+#wpqp-palette-root .wpqp-results::-webkit-scrollbar,
+#wpqp-palette-root .wpqp-results-scroll::-webkit-scrollbar,
+#wpqp-palette-root .wpqp-panel-list::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+#wpqp-palette-root .wpqp-results::-webkit-scrollbar-track,
+#wpqp-palette-root .wpqp-results-scroll::-webkit-scrollbar-track,
+#wpqp-palette-root .wpqp-panel-list::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+#wpqp-palette-root .wpqp-results::-webkit-scrollbar-thumb,
+#wpqp-palette-root .wpqp-results-scroll::-webkit-scrollbar-thumb,
+#wpqp-palette-root .wpqp-panel-list::-webkit-scrollbar-thumb {
+	background: var(--wpqp-border);
+	border-radius: 3px;
+}
+
+#wpqp-palette-root .wpqp-results:hover::-webkit-scrollbar-thumb,
+#wpqp-palette-root .wpqp-results-scroll:hover::-webkit-scrollbar-thumb,
+#wpqp-palette-root .wpqp-panel-list:hover::-webkit-scrollbar-thumb {
+	background: var(--wpqp-text-muted);
+}
+
+#wpqp-palette-root .wpqp-results::-webkit-scrollbar-thumb:hover,
+#wpqp-palette-root .wpqp-results-scroll::-webkit-scrollbar-thumb:hover,
+#wpqp-palette-root .wpqp-panel-list::-webkit-scrollbar-thumb:hover {
+	background: var(--wpqp-text);
+}
+
+/* Results heading */
+#wpqp-palette-root .wpqp-results-heading {
+	padding: var(--wpqp-spacing-sm) var(--wpqp-spacing-lg);
+	font-size: var(--wpqp-font-size-xs);
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--wpqp-text-muted);
+	background: var(--wpqp-bg-secondary);
+	border-top: 1px solid var(--wpqp-border);
+	border-bottom: 1px solid var(--wpqp-border);
+	flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Responsive Adjustments
+   ========================================================================== */
+
+@media (max-width: 768px) {
+	#wpqp-palette-root .wpqp-overlay {
+		padding-top: 5vh;
+	}
+
+	#wpqp-palette-root .wpqp-panel {
+		width: 95%;
+		max-height: 70vh;
+	}
+}

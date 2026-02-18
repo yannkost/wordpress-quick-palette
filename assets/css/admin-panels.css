@@ -1,0 +1,180 @@
+/**
+ * WP Quick Palette - Panels Styles
+ * Panels container (History + Favorites side-by-side), panel headings,
+ * filter inputs, panel lists, drag handles.
+ *
+ * @package WPQP
+ */
+
+/* ==========================================================================
+   Panels Container (History + Favorites side by side)
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-panels-container {
+	display: none;
+	flex-direction: row;
+	flex-shrink: 0;
+	width: 100%;
+	max-height: 500px;
+	border-top: 1px solid var(--wpqp-border);
+}
+
+#wpqp-palette-root .wpqp-history-panel,
+#wpqp-palette-root .wpqp-favorites-panel {
+	display: none;
+	flex-direction: column;
+	flex: 1;
+	min-width: 0;
+	border-right: 1px solid var(--wpqp-border);
+	background: var(--wpqp-bg);
+	overflow: hidden;
+}
+
+#wpqp-palette-root .wpqp-favorites-panel {
+	border-right: none;
+}
+
+#wpqp-palette-root .wpqp-panel-heading {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 8px var(--wpqp-spacing-lg);
+	font-size: var(--wpqp-font-size-base);
+	font-weight: 700;
+	color: var(--wpqp-text);
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	background: var(--wpqp-hover);
+	border-bottom: 1px solid var(--wpqp-border);
+}
+
+#wpqp-palette-root .wpqp-panel-heading-row {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	width: 100%;
+}
+
+#wpqp-palette-root .wpqp-panel-heading-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 16px;
+	height: 16px;
+	color: var(--wpqp-text-muted);
+}
+
+#wpqp-palette-root .wpqp-panel-heading-icon svg {
+	width: 100%;
+	height: 100%;
+}
+
+#wpqp-palette-root[data-density="compact"] .wpqp-panel-heading-icon {
+	width: 14px;
+	height: 14px;
+}
+
+#wpqp-palette-root .wpqp-filter-input {
+	width: 100%;
+	height: 32px;
+	padding: 0 10px;
+	font-size: 13px;
+	color: var(--wpqp-text);
+	background: var(--wpqp-bg);
+	border: 1px solid var(--wpqp-border);
+	border-radius: 4px;
+	outline: none;
+	transition: border-color 0.15s ease;
+	box-sizing: border-box;
+}
+
+#wpqp-palette-root .wpqp-filter-input:focus {
+	border-color: var(--wpqp-accent);
+}
+
+#wpqp-palette-root .wpqp-filter-input::placeholder {
+	color: var(--wpqp-text-muted);
+	font-weight: 400;
+}
+
+#wpqp-palette-root .wpqp-panel-list {
+	overflow-y: auto;
+	flex: 1;
+	min-height: 0;
+	box-sizing: border-box;
+}
+
+/* Spacing between search results and panels when no results */
+#wpqp-palette-root .wpqp-results:empty + .wpqp-panels-container,
+#wpqp-palette-root .wpqp-panels-container.has-spacing {
+	margin-top: var(--wpqp-spacing-lg);
+}
+
+/* Extra spacing between search input and panels when no search results */
+#wpqp-palette-root .wpqp-panels-container + .wpqp-sr-only,
+#wpqp-palette-root .wpqp-results > .wpqp-panels-container {
+	margin-top: 16px;
+}
+
+/* ==========================================================================
+   Drag Handle
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-drag-handle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	margin-right: var(--wpqp-spacing-sm);
+	color: var(--wpqp-text-muted);
+	cursor: grab;
+	flex-shrink: 0;
+	opacity: 0.5;
+	transition: opacity 0.15s ease;
+	user-select: none;
+	pointer-events: auto;
+}
+
+#wpqp-palette-root .wpqp-drag-handle:hover {
+	opacity: 1;
+}
+
+#wpqp-palette-root .wpqp-item:hover .wpqp-drag-handle {
+	opacity: 1;
+}
+
+#wpqp-palette-root .wpqp-drag-handle:active,
+#wpqp-palette-root .wpqp-item.wpqp-dragging .wpqp-drag-handle {
+	cursor: grabbing;
+}
+
+#wpqp-palette-root .wpqp-drag-handle svg {
+	width: 14px;
+	height: 14px;
+}
+
+/* Dragging state */
+#wpqp-palette-root .wpqp-item.wpqp-dragging {
+	pointer-events: none;
+	opacity: 0.5;
+}
+
+#wpqp-palette-root .wpqp-item.wpqp-drag-over {
+	border-top: 2px solid var(--wpqp-accent);
+}
+
+/* ==========================================================================
+   Shortcut Badge (Favorites Alt+1-9)
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-shortcut-badge--fav {
+	margin-left: var(--wpqp-spacing-sm);
+	padding: 0px 4px;
+	font-size: 9px;
+	font-weight: 600;
+	color: var(--wpqp-accent);
+	background: var(--wpqp-selected);
+	border-radius: 2px;
+	width: fit-content;
+}

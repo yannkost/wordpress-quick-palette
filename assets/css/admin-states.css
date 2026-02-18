@@ -1,0 +1,103 @@
+/**
+ * WP Quick Palette - States Styles
+ * Loading, empty, error, hint states and screen reader utilities.
+ *
+ * @package WPQP
+ */
+
+/* ==========================================================================
+   Loading State
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-loading {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: var(--wpqp-spacing-xl);
+	gap: var(--wpqp-spacing-md);
+	color: var(--wpqp-text-muted);
+	font-size: var(--wpqp-font-size-base);
+}
+
+#wpqp-palette-root .wpqp-spinner {
+	width: 24px;
+	height: 24px;
+	border: 3px solid var(--wpqp-border);
+	border-top-color: var(--wpqp-accent);
+	border-radius: 50%;
+	animation: wpqp-spin 0.8s linear infinite;
+}
+
+@keyframes wpqp-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* ==========================================================================
+   Empty State
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--wpqp-spacing-xl);
+	color: var(--wpqp-text-muted);
+	font-size: var(--wpqp-font-size-base);
+}
+
+#wpqp-palette-root .wpqp-empty--panel {
+	padding: var(--wpqp-spacing-lg);
+	font-size: var(--wpqp-font-size-sm);
+}
+
+/* ==========================================================================
+   Error State
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-error {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--wpqp-spacing-xl);
+	color: #dc2626;
+	font-size: var(--wpqp-font-size-base);
+	text-align: center;
+}
+
+#wpqp-palette-root[data-theme="dark"] .wpqp-error,
+#wpqp-palette-root[data-theme="auto"][data-resolved-theme="dark"] .wpqp-error {
+	color: #f87171;
+}
+
+/* ==========================================================================
+   Hint State
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-hint {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--wpqp-spacing-xl);
+	color: var(--wpqp-text-muted);
+	font-size: var(--wpqp-font-size-sm);
+	font-style: italic;
+}
+
+/* ==========================================================================
+   Screen Reader Only
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}

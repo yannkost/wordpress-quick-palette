@@ -1,0 +1,298 @@
+/**
+ * WP Quick Palette - Items Styles
+ * Result groups and items, star/favorite button, copy menu.
+ *
+ * @package WPQP
+ */
+
+/* ==========================================================================
+   Result Groups & Items
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-group {
+	margin-bottom: 0;
+}
+
+#wpqp-palette-root .wpqp-group-heading {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: var(--wpqp-spacing-md) var(--wpqp-spacing-lg) var(--wpqp-spacing-sm);
+	font-size: var(--wpqp-font-size-xs);
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--wpqp-accent);
+	border-bottom: 1px solid var(--wpqp-border);
+}
+
+/* Result items */
+#wpqp-palette-root .wpqp-item {
+	display: flex;
+	align-items: center;
+	padding: var(--wpqp-spacing-md) var(--wpqp-spacing-lg);
+	cursor: pointer;
+	transition: background-color 0.12s ease;
+	border-bottom: 1px solid var(--wpqp-border-light);
+}
+
+#wpqp-palette-root .wpqp-item:last-child,
+#wpqp-palette-root .wpqp-group > .wpqp-item:last-child {
+	border-bottom: none;
+}
+
+#wpqp-palette-root .wpqp-item:hover {
+	background: var(--wpqp-hover);
+}
+
+#wpqp-palette-root .wpqp-item.wpqp-item--selected {
+	background: var(--wpqp-selected);
+}
+
+#wpqp-palette-root .wpqp-item-content {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+#wpqp-palette-root .wpqp-item-title {
+	font-size: var(--wpqp-font-size-base);
+	font-weight: 500;
+	color: var(--wpqp-text);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+#wpqp-palette-root .wpqp-item-meta {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+#wpqp-palette-root .wpqp-item-type {
+	font-size: var(--wpqp-font-size-xs);
+	font-weight: 600;
+	color: var(--wpqp-type-color);
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+#wpqp-palette-root .wpqp-item-status {
+	display: inline-block;
+	padding: 1px 6px;
+	font-size: 10px;
+	font-weight: 600;
+	border-radius: 3px;
+	line-height: 1.5;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+/* Status badge colors - Light theme */
+#wpqp-palette-root .wpqp-item-status--publish {
+	background: #d4f1e8;
+	color: #0e8449;
+}
+
+#wpqp-palette-root .wpqp-item-status--draft {
+	background: #e0e7ff;
+	color: #4338ca;
+}
+
+#wpqp-palette-root .wpqp-item-status--pending {
+	background: #fff4e6;
+	color: #d97706;
+}
+
+#wpqp-palette-root .wpqp-item-status--private {
+	background: #ede9fe;
+	color: #5b21b6;
+}
+
+#wpqp-palette-root .wpqp-item-status--future {
+	background: #dbeafe;
+	color: #1e40af;
+}
+
+/* Status badge colors - Dark theme */
+#wpqp-palette-root[data-theme="dark"] .wpqp-item-status--publish,
+#wpqp-palette-root[data-theme="auto"][data-resolved-theme="dark"] .wpqp-item-status--publish {
+	background: #064e3b;
+	color: #6ee7b7;
+}
+
+#wpqp-palette-root[data-theme="dark"] .wpqp-item-status--draft,
+#wpqp-palette-root[data-theme="auto"][data-resolved-theme="dark"] .wpqp-item-status--draft {
+	background: #312e81;
+	color: #a5b4fc;
+}
+
+#wpqp-palette-root[data-theme="dark"] .wpqp-item-status--pending,
+#wpqp-palette-root[data-theme="auto"][data-resolved-theme="dark"] .wpqp-item-status--pending {
+	background: #78350f;
+	color: #fbbf24;
+}
+
+#wpqp-palette-root[data-theme="dark"] .wpqp-item-status--private,
+#wpqp-palette-root[data-theme="auto"][data-resolved-theme="dark"] .wpqp-item-status--private {
+	background: #4c1d95;
+	color: #a78bfa;
+}
+
+#wpqp-palette-root[data-theme="dark"] .wpqp-item-status--future,
+#wpqp-palette-root[data-theme="auto"][data-resolved-theme="dark"] .wpqp-item-status--future {
+	background: #1e3a8a;
+	color: #93c5fd;
+}
+
+#wpqp-palette-root .wpqp-item-time {
+	font-size: var(--wpqp-font-size-xs);
+	color: var(--wpqp-text-muted);
+	margin-left: var(--wpqp-spacing-sm);
+}
+
+/* Item actions */
+#wpqp-palette-root .wpqp-item-actions {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	margin-left: var(--wpqp-spacing-sm);
+	flex-shrink: 0;
+}
+
+#wpqp-palette-root .wpqp-item-newtab,
+#wpqp-palette-root .wpqp-delete-saved,
+#wpqp-palette-root .wpqp-copy-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	padding: 0;
+	border: 1px solid transparent;
+	background: transparent;
+	color: var(--wpqp-text-muted);
+	cursor: pointer;
+	border-radius: var(--wpqp-border-radius);
+	transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+#wpqp-palette-root .wpqp-item-newtab:hover,
+#wpqp-palette-root .wpqp-delete-saved:hover,
+#wpqp-palette-root .wpqp-copy-btn:hover {
+	color: var(--wpqp-text);
+	background: var(--wpqp-hover);
+	border-color: var(--wpqp-border);
+}
+
+#wpqp-palette-root .wpqp-item-newtab svg,
+#wpqp-palette-root .wpqp-delete-saved svg,
+#wpqp-palette-root .wpqp-copy-btn svg {
+	width: 14px;
+	height: 14px;
+}
+
+/* ==========================================================================
+   Copy Menu - Standalone (body-appended, fixed position)
+   ========================================================================== */
+
+.wpqp-copy-menu {
+	position: fixed;
+	min-width: 160px;
+	background: #fff;
+	border: 1px solid #cdd8e4;
+	border-radius: 6px;
+	box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+	z-index: 999999;
+	padding: 4px;
+}
+
+.wpqp-copy-option {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	padding: 10px 14px;
+	font-size: 13px;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	color: #3f4d5a;
+	background: transparent;
+	border: none;
+	border-radius: 0;
+	cursor: pointer;
+	text-align: left;
+	transition: background 0.1s ease;
+}
+
+.wpqp-copy-option:hover {
+	background: #e8f0fe;
+	color: #0d78f2;
+}
+
+.wpqp-copy-feedback {
+	position: absolute;
+	right: 100%;
+	top: 50%;
+	transform: translateY(-50%);
+	margin-right: 4px;
+	padding: 4px 8px;
+	font-size: 11px;
+	color: #fff;
+	background: #0d78f2;
+	border-radius: 4px;
+	white-space: nowrap;
+	animation: wpqp-fade-in 0.15s ease;
+	pointer-events: none;
+}
+
+#wpqp-palette-root[data-theme="dark"] .wpqp-copy-feedback,
+#wpqp-palette-root[data-theme="auto"][data-resolved-theme="dark"] .wpqp-copy-feedback {
+	color: var(--wpqp-bg);
+}
+
+@keyframes wpqp-fade-in {
+	from { opacity: 0; transform: translateY(-50%) translateX(-4px); }
+	to   { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
+/* ==========================================================================
+   Star / Favorite Button
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-star-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--wpqp-text-muted);
+	cursor: pointer;
+	border-radius: var(--wpqp-border-radius);
+	flex-shrink: 0;
+	transition: color 0.15s ease, background 0.15s ease;
+}
+
+#wpqp-palette-root .wpqp-star-btn:hover {
+	color: #f59e0b;
+	background: var(--wpqp-hover);
+	border: 1px solid var(--wpqp-border);
+}
+
+#wpqp-palette-root .wpqp-star-btn--active {
+	color: #f59e0b;
+}
+
+#wpqp-palette-root .wpqp-star-btn--active:hover {
+	color: #d97706;
+	border: 1px solid var(--wpqp-border);
+}
+
+#wpqp-palette-root .wpqp-star-btn svg {
+	width: 16px;
+	height: 16px;
+}

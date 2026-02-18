@@ -1,0 +1,190 @@
+/**
+ * WP Quick Palette - Dropdowns Styles
+ * Saved searches dropdown and preferences dropdown.
+ *
+ * @package WPQP
+ */
+
+/* ==========================================================================
+   Saved Searches Dropdown (Pro)
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-saved-searches-wrap {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+#wpqp-palette-root .wpqp-saved-searches-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: none;
+	border-radius: var(--wpqp-radius);
+	background: transparent;
+	color: var(--wpqp-text-muted);
+	cursor: pointer;
+	transition: color 0.15s ease, background 0.15s ease;
+}
+
+#wpqp-palette-root .wpqp-saved-searches-btn:hover,
+#wpqp-palette-root .wpqp-saved-searches-btn--active {
+	color: var(--wpqp-accent);
+	background: var(--wpqp-bg-hover);
+}
+
+#wpqp-palette-root .wpqp-saved-searches-btn svg {
+	width: 16px;
+	height: 16px;
+}
+
+#wpqp-palette-root .wpqp-saved-searches-dropdown {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	margin-top: 4px;
+	min-width: 240px;
+	max-width: 320px;
+	max-height: 280px;
+	overflow-y: auto;
+	background: var(--wpqp-bg);
+	border: 1px solid var(--wpqp-border);
+	border-radius: 12px;
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.08);
+	z-index: 100001;
+}
+
+#wpqp-palette-root .wpqp-saved-dropdown-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 8px 12px;
+	cursor: pointer;
+	border-bottom: 1px solid var(--wpqp-border-light);
+	transition: background 0.1s ease;
+}
+
+#wpqp-palette-root .wpqp-saved-dropdown-item:last-child {
+	border-bottom: none;
+}
+
+#wpqp-palette-root .wpqp-saved-dropdown-item:hover {
+	background: var(--wpqp-bg-hover);
+}
+
+#wpqp-palette-root .wpqp-saved-dropdown-label {
+	flex: 1;
+	min-width: 0;
+	font-size: 13px;
+	color: var(--wpqp-text);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+#wpqp-palette-root .wpqp-saved-dropdown-delete {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	border: none;
+	border-radius: 3px;
+	background: transparent;
+	color: var(--wpqp-text-muted);
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease;
+}
+
+#wpqp-palette-root .wpqp-saved-dropdown-item:hover .wpqp-saved-dropdown-delete {
+	opacity: 1;
+}
+
+#wpqp-palette-root .wpqp-saved-dropdown-delete:hover {
+	color: #dc2626;
+	background: rgba(220, 38, 38, 0.1);
+}
+
+#wpqp-palette-root .wpqp-saved-dropdown-empty {
+	padding: 12px;
+	text-align: center;
+	color: var(--wpqp-text-muted);
+	font-size: 13px;
+}
+
+/* ==========================================================================
+   Preferences Dropdown
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-prefs-dropdown {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	margin-top: 4px;
+	min-width: 180px;
+	background: var(--wpqp-bg);
+	border: 1px solid var(--wpqp-border);
+	border-radius: var(--wpqp-border-radius-lg);
+	box-shadow: 0 4px 16px var(--wpqp-shadow-lg);
+	z-index: 1000;
+	padding: var(--wpqp-spacing-sm);
+}
+
+#wpqp-palette-root .wpqp-prefs-btn {
+	display: none; /* Hidden in current layout - triggered programmatically */
+}
+
+#wpqp-palette-root .wpqp-prefs-section {
+	padding: var(--wpqp-spacing-sm) 0;
+}
+
+#wpqp-palette-root .wpqp-prefs-section:not(:last-child) {
+	border-bottom: 1px solid var(--wpqp-border);
+}
+
+#wpqp-palette-root .wpqp-prefs-label {
+	font-size: var(--wpqp-font-size-xs);
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--wpqp-text-muted);
+	padding: var(--wpqp-spacing-xs) var(--wpqp-spacing-sm);
+	margin-bottom: var(--wpqp-spacing-xs);
+}
+
+#wpqp-palette-root .wpqp-prefs-options {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+#wpqp-palette-root .wpqp-prefs-option {
+	display: block;
+	width: 100%;
+	padding: var(--wpqp-spacing-sm) var(--wpqp-spacing-md);
+	font-size: var(--wpqp-font-size-sm);
+	color: var(--wpqp-text);
+	background: none;
+	border: none;
+	border-radius: var(--wpqp-border-radius);
+	cursor: pointer;
+	text-align: left;
+	transition: background 0.12s ease, color 0.12s ease;
+}
+
+#wpqp-palette-root .wpqp-prefs-option:hover {
+	background: var(--wpqp-hover);
+}
+
+#wpqp-palette-root .wpqp-prefs-option--active {
+	background: var(--wpqp-selected);
+	color: var(--wpqp-accent);
+	font-weight: 600;
+}
