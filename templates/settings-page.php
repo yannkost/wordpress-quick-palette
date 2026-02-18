@@ -94,4 +94,94 @@ defined( 'ABSPATH' ) || exit;
 
 		<?php submit_button(); ?>
 	</form>
+
+	<?php if ( function_exists( 'wpqp_is_pro' ) && wpqp_is_pro() ) : ?>
+		<hr style="margin: 30px 0 24px;" />
+
+		<div class="wpqp-import-export-section">
+			<h2 style="margin-top: 0;"><?php esc_html_e( 'Import / Export', 'wp-quick-palette' ); ?></h2>
+			<p class="description" style="margin-bottom: 20px; max-width: 600px;">
+				<?php esc_html_e( 'Export your favorites and saved searches as a JSON file, then import them on another site or after a fresh install.', 'wp-quick-palette' ); ?>
+			</p>
+
+			<div id="wpqp-ie-notices" style="margin-bottom: 12px;"></div>
+
+			<!-- Export -->
+			<h3 style="margin-top: 0;"><?php esc_html_e( 'Export', 'wp-quick-palette' ); ?></h3>
+			<p>
+				<button
+					type="button"
+					id="wpqp-export-btn"
+					class="button button-secondary"
+				>
+					<?php esc_html_e( 'Download Export File', 'wp-quick-palette' ); ?>
+				</button>
+			</p>
+			<p class="description">
+				<?php esc_html_e( 'Exports your personal favorites. Administrators also export all custom saved searches.', 'wp-quick-palette' ); ?>
+			</p>
+
+			<!-- Import -->
+			<h3 style="margin-top: 24px;"><?php esc_html_e( 'Import', 'wp-quick-palette' ); ?></h3>
+			<form id="wpqp-import-form">
+				<table class="form-table" role="presentation">
+					<tbody>
+						<tr>
+							<th scope="row">
+								<label for="wpqp-import-file">
+									<?php esc_html_e( 'JSON File', 'wp-quick-palette' ); ?>
+								</label>
+							</th>
+							<td>
+								<input type="file" id="wpqp-import-file" accept=".json,application/json" />
+								<p class="description">
+									<?php esc_html_e( 'Or paste JSON directly in the field below.', 'wp-quick-palette' ); ?>
+								</p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label for="wpqp-import-json">
+									<?php esc_html_e( 'JSON Data', 'wp-quick-palette' ); ?>
+								</label>
+							</th>
+							<td>
+								<textarea
+									id="wpqp-import-json"
+									rows="6"
+									style="width:100%;max-width:600px;font-family:monospace;font-size:12px;"
+									placeholder="<?php esc_attr_e( 'Paste exported JSON here…', 'wp-quick-palette' ); ?>"
+								></textarea>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Import Mode', 'wp-quick-palette' ); ?></th>
+							<td>
+								<fieldset>
+									<label>
+										<input type="radio" name="wpqp_import_mode" value="merge" checked />
+										<?php esc_html_e( 'Merge — add new items, keep existing ones', 'wp-quick-palette' ); ?>
+									</label>
+									<br />
+									<label>
+										<input type="radio" name="wpqp_import_mode" value="replace" />
+										<?php esc_html_e( 'Replace — overwrite all existing favorites and saved searches', 'wp-quick-palette' ); ?>
+									</label>
+								</fieldset>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<p>
+					<button
+						type="submit"
+						id="wpqp-import-btn"
+						class="button button-primary"
+					>
+						<?php esc_html_e( 'Import', 'wp-quick-palette' ); ?>
+					</button>
+				</p>
+			</form>
+		</div>
+	<?php endif; ?>
 </div>

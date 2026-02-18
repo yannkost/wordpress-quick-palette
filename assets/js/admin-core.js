@@ -39,7 +39,9 @@ if ( typeof wpqpData === 'undefined' ) {
 		// Copy menu state
 		openCopyMenuId: null,
 		// Abort controller for search requests
-		searchAbortController: null
+		searchAbortController: null,
+		// Active type filter for filter chips (set by setTypeFilter)
+		activeTypeFilter: 'all'
 	};
 
 	// Item ID counter for ARIA
@@ -425,7 +427,10 @@ if ( typeof wpqpData === 'undefined' ) {
 		if ( key === 'ArrowDown' || key === 'ArrowUp' ) {
 			e.preventDefault();
 
-			var allItems = WPQP.state.elements.results.querySelectorAll( '.wpqp-item' );
+			var allItems = Array.prototype.filter.call(
+				WPQP.state.elements.results.querySelectorAll( '.wpqp-item' ),
+				function( el ) { return el.offsetParent !== null; }
+			);
 			if ( allItems.length === 0 ) {
 				return;
 			}
@@ -446,7 +451,10 @@ if ( typeof wpqpData === 'undefined' ) {
 
 			// Ctrl/Cmd+Enter opens in new tab
 			if ( e.ctrlKey || e.metaKey ) {
-				var allItemsNew = WPQP.state.elements.results.querySelectorAll( '.wpqp-item' );
+				var allItemsNew = Array.prototype.filter.call(
+					WPQP.state.elements.results.querySelectorAll( '.wpqp-item' ),
+					function( el ) { return el.offsetParent !== null; }
+				);
 				if ( WPQP.state.selectedIndex >= 0 && WPQP.state.selectedIndex < allItemsNew.length ) {
 					var selectedNew = allItemsNew[ WPQP.state.selectedIndex ];
 					if ( selectedNew && selectedNew._wpqpItem ) {
@@ -456,7 +464,10 @@ if ( typeof wpqpData === 'undefined' ) {
 				return;
 			}
 
-			var allItemsEnter = WPQP.state.elements.results.querySelectorAll( '.wpqp-item' );
+			var allItemsEnter = Array.prototype.filter.call(
+				WPQP.state.elements.results.querySelectorAll( '.wpqp-item' ),
+				function( el ) { return el.offsetParent !== null; }
+			);
 			if ( WPQP.state.selectedIndex >= 0 && WPQP.state.selectedIndex < allItemsEnter.length ) {
 				var selectedEnter = allItemsEnter[ WPQP.state.selectedIndex ];
 				if ( selectedEnter && selectedEnter._wpqpItem ) {

@@ -37,14 +37,14 @@
 		var hasHistory   = WPQP.state.history   && WPQP.state.history.length > 0;
 
 		if ( ! hasFavorites && ! hasHistory ) {
-			resultsContainer.innerHTML = '<div class="wpqp-empty">Start searching to see results. Star items to add favorites.</div>';
+			resultsContainer.innerHTML = '<div class="wpqp-empty">' + wpqpData.strings.startSearching + '</div>';
 			if ( WPQP.state.elements.panelsContainer ) {
 				WPQP.state.elements.panelsContainer.classList.add( 'wpqp-visible', 'has-spacing' );
 			}
 			WPQP.state.elements.historyPanel.style.display   = 'flex';
 			WPQP.state.elements.favoritesPanel.style.display = 'flex';
-			WPQP.state.elements.historyPanel.innerHTML   = '<div class="wpqp-empty wpqp-empty--panel">No history yet</div>';
-			WPQP.state.elements.favoritesPanel.innerHTML = '<div class="wpqp-empty wpqp-empty--panel">No favorites yet</div>';
+			WPQP.state.elements.historyPanel.innerHTML   = '<div class="wpqp-empty wpqp-empty--panel">' + wpqpData.strings.noHistory + '</div>';
+			WPQP.state.elements.favoritesPanel.innerHTML = '<div class="wpqp-empty wpqp-empty--panel">' + wpqpData.strings.noFavorites + '</div>';
 			return;
 		}
 
@@ -64,7 +64,7 @@
 			// History column
 			if ( hasHistory ) {
 				historyPanel.innerHTML = '';
-				historyPanel.appendChild( WPQP._buildPanelHeading( 'History', 'history' ) );
+				historyPanel.appendChild( WPQP._buildPanelHeading( wpqpData.strings.history, 'history' ) );
 
 				var histList   = document.createElement( 'div' );
 				histList.className = 'wpqp-panel-list';
@@ -82,7 +82,7 @@
 			// Favorites column
 			if ( hasFavorites ) {
 				favoritesPanel.innerHTML = '';
-				favoritesPanel.appendChild( WPQP._buildPanelHeading( 'Favorites', 'favorites' ) );
+				favoritesPanel.appendChild( WPQP._buildPanelHeading( wpqpData.strings.favorites, 'favorites' ) );
 
 				var favList = document.createElement( 'div' );
 				favList.className = 'wpqp-panel-list';
@@ -154,7 +154,7 @@
 
 		var statusBadge = document.createElement( 'span' );
 		statusBadge.className = 'wpqp-item-status wpqp-item-status--publish';
-		statusBadge.textContent = 'Published';
+		statusBadge.textContent = wpqpData.strings.statusPublished;
 		meta.appendChild( statusBadge );
 
 		// Relative time for history entries
@@ -175,7 +175,7 @@
 
 		var newTabBtn = document.createElement( 'button' );
 		newTabBtn.className = 'wpqp-item-newtab';
-		newTabBtn.setAttribute( 'aria-label', 'Open in new tab' );
+		newTabBtn.setAttribute( 'aria-label', wpqpData.strings.openNewTab );
 		newTabBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
 		newTabBtn.addEventListener( 'click', function( e ) {
 			e.preventDefault();
@@ -185,7 +185,7 @@
 
 		var copyBtn = document.createElement( 'button' );
 		copyBtn.className = 'wpqp-copy-btn';
-		copyBtn.setAttribute( 'aria-label', 'Copy options' );
+		copyBtn.setAttribute( 'aria-label', wpqpData.strings.copyOptions );
 		copyBtn.setAttribute( 'aria-expanded', 'false' );
 		copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/></svg>';
 		copyBtn.addEventListener( 'click', function( e ) {
@@ -499,14 +499,14 @@
 		var hasHistory   = WPQP.state.history.length   > 0;
 
 		if ( ! hasFavorites && ! hasHistory ) {
-			resultsContainer.innerHTML = '<div class="wpqp-empty">Start searching, or star items to add favorites.</div>';
+			resultsContainer.innerHTML = '<div class="wpqp-empty">' + wpqpData.strings.startSearching + '</div>';
 			if ( WPQP.state.elements.panelsContainer ) {
 				WPQP.state.elements.panelsContainer.classList.add( 'wpqp-visible', 'has-spacing' );
 			}
 			WPQP.state.elements.historyPanel.style.display   = 'flex';
 			WPQP.state.elements.favoritesPanel.style.display = 'flex';
-			WPQP.state.elements.historyPanel.innerHTML   = '<div class="wpqp-empty wpqp-empty--panel">No history yet</div>';
-			WPQP.state.elements.favoritesPanel.innerHTML = '<div class="wpqp-empty wpqp-empty--panel">No favorites yet</div>';
+			WPQP.state.elements.historyPanel.innerHTML   = '<div class="wpqp-empty wpqp-empty--panel">' + wpqpData.strings.noHistory + '</div>';
+			WPQP.state.elements.favoritesPanel.innerHTML = '<div class="wpqp-empty wpqp-empty--panel">' + wpqpData.strings.noFavorites + '</div>';
 			return;
 		}
 
@@ -526,7 +526,7 @@
 			// History column
 			if ( hasHistory ) {
 				historyPanel.innerHTML = '';
-				historyPanel.appendChild( WPQP._buildPanelHeading( 'History', 'history' ) );
+				historyPanel.appendChild( WPQP._buildPanelHeading( wpqpData.strings.history, 'history' ) );
 
 				var histList = document.createElement( 'div' );
 				histList.className = 'wpqp-panel-list';
@@ -544,7 +544,7 @@
 			// Favorites column
 			if ( hasFavorites ) {
 				favoritesPanel.innerHTML = '';
-				favoritesPanel.appendChild( WPQP._buildPanelHeading( 'Favorites', 'favorites' ) );
+				favoritesPanel.appendChild( WPQP._buildPanelHeading( wpqpData.strings.favorites, 'favorites' ) );
 
 				var favList = document.createElement( 'div' );
 				favList.className = 'wpqp-panel-list';
@@ -615,7 +615,7 @@
 
 		var statusBadge = document.createElement( 'span' );
 		statusBadge.className = 'wpqp-item-status wpqp-item-status--publish';
-		statusBadge.textContent = 'Published';
+		statusBadge.textContent = wpqpData.strings.statusPublished;
 		meta.appendChild( statusBadge );
 
 		if ( item.last_used ) {
@@ -634,7 +634,7 @@
 
 		var newTabBtn = document.createElement( 'button' );
 		newTabBtn.className = 'wpqp-item-newtab';
-		newTabBtn.setAttribute( 'aria-label', 'Open in new tab' );
+		newTabBtn.setAttribute( 'aria-label', wpqpData.strings.openNewTab );
 		newTabBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
 		newTabBtn.addEventListener( 'click', function( e ) {
 			e.preventDefault();
@@ -644,7 +644,7 @@
 
 		var copyBtn = document.createElement( 'button' );
 		copyBtn.className = 'wpqp-copy-btn';
-		copyBtn.setAttribute( 'aria-label', 'Copy options' );
+		copyBtn.setAttribute( 'aria-label', wpqpData.strings.copyOptions );
 		copyBtn.setAttribute( 'aria-expanded', 'false' );
 		copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/></svg>';
 		copyBtn.addEventListener( 'click', function( e ) {
@@ -754,12 +754,12 @@
 					}
 					WPQP.renderResults( WPQP.state.results );
 				} else {
-					WPQP.renderError( data.data && data.data.message ? data.data.message : 'An error occurred' );
+					WPQP.renderError( data.data && data.data.message ? data.data.message : wpqpData.strings.searchError );
 				}
 			} )
 			.catch( function( error ) {
 				console.error( 'WPQP execute saved search error:', error );
-				WPQP.renderError( 'Failed to execute saved search. Please try again.' );
+				WPQP.renderError( wpqpData.strings.searchFailed );
 			} );
 	};
 
@@ -809,7 +809,7 @@
 		if ( WPQP.state.savedSearches.length === 0 ) {
 			var empty = document.createElement( 'div' );
 			empty.className = 'wpqp-saved-dropdown-empty';
-			empty.textContent = 'No saved searches yet';
+			empty.textContent = wpqpData.strings.noSavedSearches;
 			dropdown.appendChild( empty );
 			return;
 		}
@@ -864,7 +864,7 @@
 			return;
 		}
 
-		var label = prompt( 'Enter a name for this saved search:' );
+		var label = prompt( wpqpData.strings.nameYourSearch );
 		if ( label && label.trim() ) {
 			WPQP.saveSearch( label.trim(), term );
 		}
@@ -893,7 +893,7 @@
 			.then( function( data ) {
 				if ( data.success && data.data && data.data.saved_searches ) {
 					WPQP.state.savedSearches = data.data.saved_searches;
-					WPQP.state.elements.announce.textContent = 'Search "' + label + '" saved';
+					WPQP.state.elements.announce.textContent = label + ' - ' + wpqpData.strings.savedConfirm;
 				}
 			} )
 			.catch( function( err ) {
@@ -1084,7 +1084,7 @@
 		var filterInput = document.createElement( 'input' );
 		filterInput.type = 'text';
 		filterInput.className = 'wpqp-filter-input';
-		filterInput.placeholder = 'Filter...';
+		filterInput.placeholder = wpqpData.strings.filterHistory;
 		filterInput.addEventListener( 'input', function( e ) {
 			if ( type === 'history' ) {
 				WPQP.filterHistoryItems( e.target.value );

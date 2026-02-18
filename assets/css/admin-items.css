@@ -23,6 +23,7 @@
 	text-transform: uppercase;
 	letter-spacing: 0.08em;
 	color: var(--wpqp-accent);
+	background: var(--wpqp-bg-secondary);
 	border-bottom: 1px solid var(--wpqp-border);
 }
 
@@ -51,6 +52,30 @@
 	background: var(--wpqp-selected);
 }
 
+/* Favorited item highlight — subtle accent tint */
+#wpqp-palette-root .wpqp-item.wpqp-item--favorited {
+	background: rgb(13 242 106 / 4%);
+}
+
+#wpqp-palette-root .wpqp-item.wpqp-item--favorited:hover {
+	background: rgba(13, 120, 242, 0.08);
+}
+
+#wpqp-palette-root .wpqp-item.wpqp-item--favorited.wpqp-item--selected {
+	background: rgba(13, 120, 242, 0.12);
+}
+
+/* Dark theme override */
+#wpqp-palette-root[data-theme="dark"] .wpqp-item.wpqp-item--favorited,
+#wpqp-palette-root[data-theme="auto"][data-resolved-theme="dark"] .wpqp-item.wpqp-item--favorited {
+	background: rgba(77, 166, 255, 0.06);
+}
+
+#wpqp-palette-root[data-theme="dark"] .wpqp-item.wpqp-item--favorited:hover,
+#wpqp-palette-root[data-theme="auto"][data-resolved-theme="dark"] .wpqp-item.wpqp-item--favorited:hover {
+	background: rgba(77, 166, 255, 0.11);
+}
+
 #wpqp-palette-root .wpqp-item-content {
 	flex: 1;
 	min-width: 0;
@@ -66,6 +91,16 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+#wpqp-palette-root .wpqp-item-subtitle {
+	font-size: var(--wpqp-font-size-xs);
+	color: var(--wpqp-text-muted);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-style: italic;
+	margin-top: 1px;
 }
 
 #wpqp-palette-root .wpqp-item-meta {

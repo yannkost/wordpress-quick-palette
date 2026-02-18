@@ -1,0 +1,151 @@
+/**
+ * WP Quick Palette — Dashboard Widget
+ * Scoped to #wpqp_favorites_widget to avoid bleeding into other widgets.
+ *
+ * @package WPQP
+ */
+
+/* ==========================================================================
+   Favorites list
+   ========================================================================== */
+
+#wpqp_favorites_widget .wpqp-dw-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+#wpqp_favorites_widget .wpqp-dw-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 7px 0;
+	border-bottom: 1px solid #f0f0f0;
+	gap: 8px;
+}
+
+#wpqp_favorites_widget .wpqp-dw-item:last-child {
+	border-bottom: none;
+}
+
+/* Link (star + title) */
+#wpqp_favorites_widget .wpqp-dw-link {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	flex: 1;
+	min-width: 0;
+	text-decoration: none;
+	color: #1d2327;
+	font-size: 13px;
+	font-weight: 400;
+}
+
+#wpqp_favorites_widget .wpqp-dw-link:hover {
+	color: #2271b1;
+}
+
+#wpqp_favorites_widget .wpqp-dw-star {
+	color: #f59e0b;
+	font-size: 12px;
+	flex-shrink: 0;
+	line-height: 1;
+}
+
+#wpqp_favorites_widget .wpqp-dw-title {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* Right-side meta (type badge + shortcut badge) */
+#wpqp_favorites_widget .wpqp-dw-meta {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-shrink: 0;
+}
+
+#wpqp_favorites_widget .wpqp-dw-type {
+	font-size: 11px;
+	font-weight: 600;
+	color: #8c8f94;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+#wpqp_favorites_widget .wpqp-dw-shortcut {
+	display: inline-block;
+	padding: 1px 5px;
+	font-size: 10px;
+	font-weight: 500;
+	color: #8c8f94;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 3px;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+	white-space: nowrap;
+	line-height: 1.5;
+}
+
+/* ==========================================================================
+   Empty state
+   ========================================================================== */
+
+#wpqp_favorites_widget .wpqp-dw-empty p {
+	margin: 0 0 12px;
+	color: #646970;
+	font-size: 13px;
+	font-style: italic;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+#wpqp_favorites_widget .wpqp-dw-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 14px;
+	padding-top: 12px;
+	border-top: 1px solid #f0f0f0;
+	gap: 10px;
+}
+
+#wpqp_favorites_widget .wpqp-dw-open-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+#wpqp_favorites_widget .wpqp-dw-open-btn kbd {
+	display: inline-block;
+	padding: 0 4px;
+	font-size: 10px;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+	color: #646970;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 3px;
+	line-height: 1.6;
+}
+
+#wpqp_favorites_widget .wpqp-dw-count {
+	font-size: 12px;
+	color: #8c8f94;
+	margin-left: auto;
+}
+
+/* ==========================================================================
+   WP dark admin color scheme overrides
+   ========================================================================== */
+
+.admin-color-midnight #wpqp_favorites_widget .wpqp-dw-link,
+.admin-color-coffee #wpqp_favorites_widget .wpqp-dw-link,
+.admin-color-ectoplasm #wpqp_favorites_widget .wpqp-dw-link,
+.admin-color-ocean #wpqp_favorites_widget .wpqp-dw-link,
+.admin-color-night #wpqp_favorites_widget .wpqp-dw-link,
+.admin-color-sunrise #wpqp_favorites_widget .wpqp-dw-link {
+	color: #1d2327; /* stays dark — widget bg is always white in WP */
+}

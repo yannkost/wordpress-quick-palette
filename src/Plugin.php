@@ -38,6 +38,8 @@ class Plugin {
 		// Pro components.
 		if ( function_exists( 'wpqp_is_pro' ) && wpqp_is_pro() ) {
 			new SavedSearchesController();
+			new DashboardWidget();
+			new ImportExportController();
 		}
 	}
 }

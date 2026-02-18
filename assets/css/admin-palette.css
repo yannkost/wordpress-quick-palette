@@ -45,7 +45,7 @@
 	position: relative;
 	width: 90%;
 	max-width: 720px;
-	max-height: 70vh;
+	max-height: 80vh;
 	background: var(--wpqp-bg);
 	border-radius: var(--wpqp-border-radius-lg);
 	box-shadow: 0 8px 40px var(--wpqp-shadow-lg), 0 0 0 1px var(--wpqp-border);
@@ -148,8 +148,13 @@
 	display: flex;
 	gap: 0;
 	padding: 0 var(--wpqp-spacing-lg);
-	background: var(--wpqp-bg-secondary);
+	background: #eaecf0;
 	border-bottom: 1px solid var(--wpqp-border);
+}
+
+#wpqp-palette-root[data-theme="dark"] .wpqp-search-tabs,
+#wpqp-palette-root[data-theme="auto"][data-resolved-theme="dark"] .wpqp-search-tabs {
+	background: var(--wpqp-bg-secondary);
 }
 
 #wpqp-palette-root .wpqp-search-tab {
@@ -363,6 +368,54 @@
 /* .wpqp-results-scroll has no enter animation — items inside handle their own stagger */
 
 /* ==========================================================================
+   Type Filter Chips
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-type-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	padding: var(--wpqp-spacing-sm) var(--wpqp-spacing-lg);
+	border-bottom: 1px solid var(--wpqp-border-light);
+	background: var(--wpqp-bg);
+	flex-shrink: 0;
+}
+
+#wpqp-palette-root .wpqp-filter-chip {
+	display: inline-flex;
+	align-items: center;
+	padding: 3px 10px;
+	font-size: var(--wpqp-font-size-xs);
+	font-weight: 600;
+	color: var(--wpqp-text-muted);
+	background: var(--wpqp-bg-secondary);
+	border: 1px solid var(--wpqp-border);
+	border-radius: 20px;
+	cursor: pointer;
+	transition: color 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+	white-space: nowrap;
+	font-family: inherit;
+	line-height: 1.4;
+}
+
+#wpqp-palette-root .wpqp-filter-chip:hover {
+	color: var(--wpqp-text);
+	background: var(--wpqp-hover);
+	border-color: var(--wpqp-border);
+}
+
+#wpqp-palette-root .wpqp-filter-chip--active {
+	color: var(--wpqp-accent);
+	background: rgba(13, 120, 242, 0.08);
+	border-color: var(--wpqp-accent);
+}
+
+#wpqp-palette-root[data-theme="dark"] .wpqp-filter-chip--active,
+#wpqp-palette-root[data-theme="auto"][data-resolved-theme="dark"] .wpqp-filter-chip--active {
+	background: rgba(77, 166, 255, 0.12);
+}
+
+/* ==========================================================================
    Responsive Adjustments
    ========================================================================== */
 
@@ -373,6 +426,6 @@
 
 	#wpqp-palette-root .wpqp-panel {
 		width: 95%;
-		max-height: 70vh;
+		max-height: 80vh;
 	}
 }

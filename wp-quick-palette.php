@@ -4,7 +4,7 @@
  * Plugin URI:  https://wordpress.org/plugins/wp-quick-palette/
  * Description: A Craft-inspired command palette and quick search for the WordPress admin.
  * Version:     1.2.0
- * Author:      Your Name
+ * Author:      Yann Kost
  * Author URI:  https://example.com
  * License:     GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html

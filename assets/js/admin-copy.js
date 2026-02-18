@@ -43,11 +43,11 @@
 		// Copy URL option
 		var urlOption = document.createElement( 'button' );
 		urlOption.className = 'wpqp-copy-option';
-		urlOption.textContent = 'Copy URL';
+		urlOption.textContent = wpqpData.strings.copyUrl;
 		urlOption.addEventListener( 'click', function( e ) {
 			e.stopPropagation();
 			WPQP.copyToClipboard( item.edit_url || item.url || '' );
-			WPQP.showCopyFeedback( btn, 'URL copied!' );
+			WPQP.showCopyFeedback( btn, wpqpData.strings.copiedUrl );
 			menu.remove();
 			WPQP.state.openCopyMenuId = null;
 		} );
@@ -55,11 +55,11 @@
 		// Copy Title option
 		var titleOption = document.createElement( 'button' );
 		titleOption.className = 'wpqp-copy-option';
-		titleOption.textContent = 'Copy Title';
+		titleOption.textContent = wpqpData.strings.copyTitle;
 		titleOption.addEventListener( 'click', function( e ) {
 			e.stopPropagation();
 			WPQP.copyToClipboard( item.title || '' );
-			WPQP.showCopyFeedback( btn, 'Title copied!' );
+			WPQP.showCopyFeedback( btn, wpqpData.strings.copiedTitle );
 			menu.remove();
 			WPQP.state.openCopyMenuId = null;
 		} );
@@ -67,11 +67,11 @@
 		// Copy ID option
 		var idOption = document.createElement( 'button' );
 		idOption.className = 'wpqp-copy-option';
-		idOption.textContent = 'Copy ID';
+		idOption.textContent = wpqpData.strings.copyId;
 		idOption.addEventListener( 'click', function( e ) {
 			e.stopPropagation();
 			WPQP.copyToClipboard( String( item.id || '' ) );
-			WPQP.showCopyFeedback( btn, 'ID copied!' );
+			WPQP.showCopyFeedback( btn, wpqpData.strings.copiedId );
 			menu.remove();
 			WPQP.state.openCopyMenuId = null;
 		} );

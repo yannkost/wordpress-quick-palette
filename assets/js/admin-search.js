@@ -25,9 +25,11 @@
 
 		// Check for search prefix (c:, u:, a:, content:, users:, admin:)
 		var prefixResult = WPQP.detectSearchPrefix( term );
-		if ( prefixResult.prefixFound && prefixResult.searchType !== WPQP.state.activeSearchType ) {
-			WPQP.switchSearchType( prefixResult.searchType );
-			term = prefixResult.cleanTerm;
+		if ( prefixResult.prefixFound ) {
+			term = prefixResult.cleanTerm; // always strip prefix before sending to backend
+			if ( prefixResult.searchType !== WPQP.state.activeSearchType ) {
+				WPQP.switchSearchType( prefixResult.searchType );
+			}
 		}
 
 		// Clear existing debounce timer
@@ -104,7 +106,7 @@
 			if ( term.length >= 2 ) {
 				WPQP.performSearch( term, WPQP.state.activeSearchType );
 			} else if ( term.length === 1 ) {
-				WPQP.renderHint( 'Type at least 2 characters to search' );
+				WPQP.renderHint( wpqpData.strings.typeMore );
 			}
 		}, 300 );
 	};
@@ -262,9 +264,61 @@
 	// =========================================================================
 
 	/**
+	 * Perform client-side admin menu search.
+	 *
+	 * The admin menu is pre-loaded into wpqpData.adminMenu during the page
+	 * load (when $menu/$submenu are populated). AJAX requests can't access
+	 * those globals, so we search locally instead.
+	 */
+	WPQP.performAdminSearch = function( term ) {
+		var items    = ( wpqpData.adminMenu && wpqpData.adminMenu.length ) ? wpqpData.adminMenu : [];
+		var lower    = term.toLowerCase();
+		// Derive admin base URL from the known ajaxUrl
+		var adminBase = wpqpData.ajaxUrl.replace( 'admin-ajax.php', '' );
+
+		var matched = [];
+		var seen    = {};
+
+		items.forEach( function( item ) {
+			if ( ! item.title || item.title.toLowerCase().indexOf( lower ) === -1 ) {
+				return;
+			}
+
+			var url     = item.url || '';
+			var editUrl = ( url.indexOf( 'http' ) === 0 ) ? url : adminBase + url;
+
+			if ( seen[ editUrl ] ) {
+				return;
+			}
+			seen[ editUrl ] = true;
+
+			matched.push( {
+				type:     'admin',
+				id:       item.title,
+				title:    item.title,
+				edit_url: editUrl,
+				parent:   item.parent || '',
+			} );
+		} );
+
+		if ( matched.length === 0 ) {
+			WPQP.renderEmpty();
+			return;
+		}
+
+		WPQP.renderResults( { admin: matched } );
+	};
+
+	/**
 	 * Perform AJAX search.
 	 */
 	WPQP.performSearch = function( term, searchType ) {
+		// Admin search is fully client-side — menu data is pre-loaded in wpqpData.adminMenu.
+		if ( 'admin' === searchType ) {
+			WPQP.performAdminSearch( term );
+			return;
+		}
+
 		WPQP.state.requestId++;
 		var currentRequestId = WPQP.state.requestId;
 
@@ -316,7 +370,7 @@
 					WPQP.state.results = data.data.results || {};
 					WPQP.renderResults( WPQP.state.results );
 				} else {
-					WPQP.renderError( data.data && data.data.message ? data.data.message : 'An error occurred' );
+					WPQP.renderError( data.data && data.data.message ? data.data.message : wpqpData.strings.searchError );
 				}
 			} )
 			.catch( function( error ) {
@@ -327,11 +381,11 @@
 				}
 
 				if ( error && error.name === 'AbortError' ) {
-					WPQP.renderError( 'Search timed out. Please try again.' );
+					WPQP.renderError( wpqpData.strings.searchTimeout );
 					return;
 				}
 
-				WPQP.renderError( 'Failed to perform search. Please try again.' );
+				WPQP.renderError( wpqpData.strings.searchFailed );
 			} );
 	};
 
@@ -347,6 +401,9 @@
 		if ( ! resultsContainer ) {
 			return;
 		}
+
+		// Reset type filter state
+		WPQP.state.activeTypeFilter = 'all';
 
 		resultsContainer.style.display = 'flex';
 		resultsContainer.classList.add( 'has-results' );
@@ -377,12 +434,55 @@
 		// Results count heading (outside scroll wrapper)
 		var countHeading = document.createElement( 'div' );
 		countHeading.className = 'wpqp-results-heading';
-		countHeading.textContent = 'Search Results (' + totalCount + ')';
+		countHeading.textContent = wpqpData.strings.searchResults + ' (' + totalCount + ')';
 		resultsContainer.appendChild( countHeading );
 
-		// Scrollable wrapper for result items
+		// Collect groups that have results
+		var groupKeys = [];
+		for ( var gk in results ) {
+			if ( results.hasOwnProperty( gk ) && results[ gk ].length > 0 ) {
+				groupKeys.push( gk );
+			}
+		}
+
+		// Scrollable wrapper for result items (declared here so filter chips can reference it)
 		var scrollWrapper = document.createElement( 'div' );
 		scrollWrapper.className = 'wpqp-results-scroll';
+
+		// Type filter chips — only shown when 2+ groups have results
+		if ( groupKeys.length >= 2 ) {
+			var filtersBar = document.createElement( 'div' );
+			filtersBar.className = 'wpqp-type-filters';
+
+			// "All" chip
+			var allChip = document.createElement( 'button' );
+			allChip.className = 'wpqp-filter-chip wpqp-filter-chip--active';
+			allChip.setAttribute( 'data-filter', 'all' );
+			allChip.textContent = wpqpData.strings ? wpqpData.strings.filterAll : 'All';
+			( function( fb, sw ) {
+				allChip.addEventListener( 'click', function() {
+					WPQP.setTypeFilter( 'all', fb, sw );
+				} );
+			} )( filtersBar, scrollWrapper );
+			filtersBar.appendChild( allChip );
+
+			// One chip per type
+			groupKeys.forEach( function( postType ) {
+				var chip = document.createElement( 'button' );
+				chip.className = 'wpqp-filter-chip';
+				chip.setAttribute( 'data-filter', postType );
+				chip.textContent = WPQP.getPostTypeSingularLabel( postType ) + ' (' + results[ postType ].length + ')';
+				( function( pt, fb, sw ) {
+					chip.addEventListener( 'click', function() {
+						WPQP.setTypeFilter( pt, fb, sw );
+					} );
+				} )( postType, filtersBar, scrollWrapper );
+				filtersBar.appendChild( chip );
+			} );
+
+			resultsContainer.appendChild( filtersBar );
+		}
+
 		resultsContainer.appendChild( scrollWrapper );
 
 		// Read stagger timing from CSS vars
@@ -398,6 +498,13 @@
 
 			var group = document.createElement( 'div' );
 			group.className = 'wpqp-group';
+			group.setAttribute( 'data-post-type', postType );
+
+			// Group heading with post type label and count
+			var groupHeading = document.createElement( 'div' );
+			groupHeading.className = 'wpqp-group-heading';
+			groupHeading.textContent = WPQP.getPostTypeSingularLabel( postType ) + ' (' + results[ postType ].length + ')';
+			group.appendChild( groupHeading );
 
 			results[ postType ].forEach( function( item ) {
 				var itemEl = WPQP.createResultItem( item );
@@ -411,7 +518,34 @@
 
 		// Update ARIA
 		WPQP.state.elements.input.setAttribute( 'aria-expanded', 'true' );
-		WPQP.state.elements.announce.textContent = totalCount + ' results found';
+		WPQP.state.elements.announce.textContent = totalCount + ' ' + wpqpData.strings.resultsFound;
+	};
+
+	/**
+	 * Set the active type filter and show/hide groups accordingly.
+	 */
+	WPQP.setTypeFilter = function( type, filtersBar, scrollWrapper ) {
+		WPQP.state.activeTypeFilter = type;
+
+		// Update chip active states
+		var chips = filtersBar.querySelectorAll( '.wpqp-filter-chip' );
+		chips.forEach( function( chip ) {
+			if ( chip.getAttribute( 'data-filter' ) === type ) {
+				chip.classList.add( 'wpqp-filter-chip--active' );
+			} else {
+				chip.classList.remove( 'wpqp-filter-chip--active' );
+			}
+		} );
+
+		// Show/hide groups
+		var groups = scrollWrapper.querySelectorAll( '.wpqp-group' );
+		groups.forEach( function( group ) {
+			if ( type === 'all' || group.getAttribute( 'data-post-type' ) === type ) {
+				group.style.display = '';
+			} else {
+				group.style.display = 'none';
+			}
+		} );
 	};
 
 	/**
@@ -448,6 +582,23 @@
 		title.className = 'wpqp-item-title';
 		title.textContent = WPQP.decodeHtmlEntities( item.title );
 
+		// Comment subtitle: "by Author on 'Post Title'"
+		if ( item.comment_author || item.parent_post_title ) {
+			var subtitle = document.createElement( 'div' );
+			subtitle.className = 'wpqp-item-subtitle';
+			var byStr = ( wpqpData.strings && wpqpData.strings.commentBy ) ? wpqpData.strings.commentBy : 'by';
+			var onStr = ( wpqpData.strings && wpqpData.strings.commentOn ) ? wpqpData.strings.commentOn : 'on';
+			var parts = [];
+			if ( item.comment_author ) {
+				parts.push( byStr + ' ' + WPQP.decodeHtmlEntities( item.comment_author ) );
+			}
+			if ( item.parent_post_title ) {
+				parts.push( onStr + ' \u201c' + WPQP.decodeHtmlEntities( item.parent_post_title ) + '\u201d' );
+			}
+			subtitle.textContent = parts.join( ' ' );
+			content.appendChild( subtitle );
+		}
+
 		var meta = document.createElement( 'div' );
 		meta.className = 'wpqp-item-meta';
 
@@ -458,16 +609,16 @@
 
 		// Status badge
 		var statusMap = {
-			'publish':  'Published',
-			'draft':    'Draft',
-			'pending':  'Pending',
-			'private':  'Private',
-			'future':   'Scheduled',
-			'trash':    'Trash',
+			'publish':  wpqpData.strings.statusPublished,
+			'draft':    wpqpData.strings.statusDraft,
+			'pending':  wpqpData.strings.statusPending,
+			'private':  wpqpData.strings.statusPrivate,
+			'future':   wpqpData.strings.statusScheduled,
+			'trash':    wpqpData.strings.statusTrash,
 			'disabled': 'Disabled',
 			'expired':  'Expired'
 		};
-		var statusText  = statusMap[ item.status ] || 'Published';
+		var statusText  = statusMap[ item.status ] || wpqpData.strings.statusPublished;
 		var statusClass = 'wpqp-item-status--' + ( item.status || 'publish' );
 		var statusBadge = document.createElement( 'span' );
 		statusBadge.className = 'wpqp-item-status ' + statusClass;
@@ -475,6 +626,14 @@
 
 		meta.appendChild( typeBadge );
 		meta.appendChild( statusBadge );
+
+		// Relative time (modified date)
+		if ( item.modified_date && typeof WPQP.getRelativeTime === 'function' ) {
+			var timeEl = document.createElement( 'span' );
+			timeEl.className = 'wpqp-item-time';
+			timeEl.textContent = WPQP.getRelativeTime( item.modified_date );
+			meta.appendChild( timeEl );
+		}
 
 		content.appendChild( title );
 		content.appendChild( meta );
@@ -487,7 +646,7 @@
 		// Open in new tab button
 		var newTabBtn = document.createElement( 'button' );
 		newTabBtn.className = 'wpqp-item-newtab';
-		newTabBtn.setAttribute( 'aria-label', 'Open in new tab' );
+		newTabBtn.setAttribute( 'aria-label', wpqpData.strings.openNewTab );
 		newTabBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
 		newTabBtn.addEventListener( 'click', function( e ) {
 			e.preventDefault();
@@ -498,7 +657,7 @@
 		// Copy button (three-dots menu)
 		var copyBtn = document.createElement( 'button' );
 		copyBtn.className = 'wpqp-copy-btn';
-		copyBtn.setAttribute( 'aria-label', 'Copy options' );
+		copyBtn.setAttribute( 'aria-label', wpqpData.strings.copyOptions );
 		copyBtn.setAttribute( 'aria-expanded', 'false' );
 		copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/></svg>';
 		copyBtn.addEventListener( 'click', function( e ) {
@@ -511,18 +670,21 @@
 		actions.appendChild( copyBtn );
 		itemEl.appendChild( actions );
 
-		// Star button (Pro)
-		if ( wpqpData.isPro ) {
-			var isStarred = WPQP.isItemFavorited( item.type, item.id );
-			var starBtn   = WPQP.createStarButton( item, isStarred );
-			itemEl.appendChild( starBtn );
+		// Star button (Lite + Pro)
+		var isStarred = WPQP.isItemFavorited( item.type, item.id );
+		var starBtn   = WPQP.createStarButton( item, isStarred );
+		itemEl.appendChild( starBtn );
+
+		// Highlight favorited items with a subtle tint
+		if ( isStarred ) {
+			itemEl.classList.add( 'wpqp-item--favorited' );
 		}
 
 		// Click handler
 		itemEl.addEventListener( 'click', function( e ) {
 			if (
 				e.target.closest( '.wpqp-item-actions' ) ||
-				( wpqpData.isPro && e.target.closest( '.wpqp-star-btn' ) )
+				e.target.closest( '.wpqp-star-btn' )
 			) {
 				return;
 			}
@@ -531,8 +693,11 @@
 
 		// Hover handler
 		itemEl.addEventListener( 'mouseenter', function() {
-			var allItems = WPQP.state.elements.results.querySelectorAll( '.wpqp-item' );
-			var index    = Array.prototype.indexOf.call( allItems, itemEl );
+			var allItems = Array.prototype.filter.call(
+				WPQP.state.elements.results.querySelectorAll( '.wpqp-item' ),
+				function( el ) { return el.offsetParent !== null; }
+			);
+			var index = allItems.indexOf( itemEl );
 			WPQP.selectItem( index );
 		} );
 
@@ -549,7 +714,7 @@
 	WPQP.renderLoading = function() {
 		var resultsContainer = WPQP.state.elements.results;
 		if ( ! resultsContainer ) { return; }
-		resultsContainer.innerHTML = '<div class="wpqp-loading"><span class="wpqp-spinner"></span><span>Searching...</span></div>';
+		resultsContainer.innerHTML = '<div class="wpqp-loading"><span class="wpqp-spinner"></span><span>' + wpqpData.strings.searching + '</span></div>';
 	};
 
 	/**
@@ -558,7 +723,7 @@
 	WPQP.renderEmpty = function() {
 		var resultsContainer = WPQP.state.elements.results;
 		if ( ! resultsContainer ) { return; }
-		resultsContainer.innerHTML = '<div class="wpqp-empty">No results found</div>';
+		resultsContainer.innerHTML = '<div class="wpqp-empty">' + wpqpData.strings.noResults + '</div>';
 		WPQP.state.elements.input.setAttribute( 'aria-expanded', 'false' );
 	};
 
@@ -612,12 +777,13 @@
 	 */
 	WPQP.getPostTypeSingularLabel = function( postType ) {
 		var labels = {
-			'post':       'Post',
-			'page':       'Page',
-			'product':    'Product',
-			'attachment': 'Media',
-			'user':       'User',
-			'admin':      'Admin'
+			'post':       wpqpData.strings.typePost,
+			'page':       wpqpData.strings.typePage,
+			'product':    wpqpData.strings.typeProduct,
+			'attachment': wpqpData.strings.typeMedia,
+			'user':       wpqpData.strings.typeUser,
+			'admin':      wpqpData.strings.typeAdmin,
+			'comment':    wpqpData.strings.typeComment
 		};
 		return labels[ postType ] || postType.charAt( 0 ).toUpperCase() + postType.slice( 1 );
 	};

@@ -164,7 +164,61 @@ class SearchController {
 		remove_filter( 'posts_search', $title_only_filter, 10 );
 		remove_filter( 'posts_orderby', $relevance_orderby, 10 );
 
+		// Append comment results for users who can moderate comments.
+		if ( current_user_can( 'moderate_comments' ) ) {
+			$comment_results = $this->search_comments( $search_term );
+			if ( ! empty( $comment_results ) ) {
+				$results['comment'] = $comment_results;
+			}
+		}
+
 		return $results;
+	}
+
+	/**
+	 * Search comments by content or author name.
+	 *
+	 * @param string $search_term Search term.
+	 * @return array Comment results.
+	 */
+	private function search_comments( $search_term ) {
+		$query = new \WP_Comment_Query(
+			array(
+				'search'      => $search_term,
+				'status'      => 'approve',
+				'post_status' => 'publish',
+				'number'      => 8,
+				'orderby'     => 'comment_date_gmt',
+				'order'       => 'DESC',
+			)
+		);
+
+		$items = array();
+
+		foreach ( $query->comments as $comment ) {
+			// Verify the current user can at least edit the parent post.
+			if ( ! current_user_can( 'edit_post', $comment->comment_post_ID ) ) {
+				continue;
+			}
+
+			$excerpt    = wp_trim_words( wp_strip_all_tags( $comment->comment_content ), 12, '…' );
+			$post_title = get_the_title( $comment->comment_post_ID );
+
+			$items[] = array(
+				'type'              => 'comment',
+				'id'                => $comment->comment_ID,
+				'title'             => $excerpt ?: __( '(empty comment)', 'wp-quick-palette' ),
+				'status'            => 'publish',
+				'modified_date'     => gmdate( 'Y-m-d\TH:i:s+00:00', strtotime( $comment->comment_date_gmt . ' UTC' ) ),
+				'created_date'      => gmdate( 'Y-m-d\TH:i:s+00:00', strtotime( $comment->comment_date_gmt . ' UTC' ) ),
+				'edit_url'          => admin_url( 'comment.php?action=editcomment&c=' . $comment->comment_ID ),
+				'view_url'          => get_comment_link( $comment->comment_ID ),
+				'comment_author'    => wp_specialchars_decode( $comment->comment_author, ENT_QUOTES ),
+				'parent_post_title' => $post_title,
+			);
+		}
+
+		return $items;
 	}
 
 	/**

@@ -26,7 +26,7 @@
 		overlay.className = 'wpqp-overlay';
 		overlay.setAttribute( 'role', 'dialog' );
 		overlay.setAttribute( 'aria-modal', 'true' );
-		overlay.setAttribute( 'aria-label', 'Quick Access' );
+		overlay.setAttribute( 'aria-label', wpqpData.strings.title );
 		overlay.setAttribute( 'aria-hidden', 'true' );
 
 		var backdrop = document.createElement( 'div' );
@@ -49,7 +49,7 @@
 
 		var titleText = document.createElement( 'span' );
 		titleText.className = 'wpqp-title-text';
-		titleText.textContent = 'Quick Access';
+		titleText.textContent = wpqpData.strings.title;
 
 		titleLeft.appendChild( titleText );
 
@@ -59,7 +59,7 @@
 		siteSelector.style.display = 'none';
 		var defaultOption = document.createElement( 'option' );
 		defaultOption.value = 'default';
-		defaultOption.textContent = 'Default';
+		defaultOption.textContent = wpqpData.strings.siteDefault;
 		siteSelector.appendChild( defaultOption );
 		titleLeft.appendChild( siteSelector );
 
@@ -77,7 +77,7 @@
 		// Close button (X)
 		var closeBtn = document.createElement( 'button' );
 		closeBtn.className = 'wpqp-close-btn';
-		closeBtn.setAttribute( 'aria-label', 'Close' );
+		closeBtn.setAttribute( 'aria-label', wpqpData.strings.close );
 		closeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
 		closeBtn.addEventListener( 'click', function() {
 			WPQP.closePalette();
@@ -97,7 +97,11 @@
 		searchTabs.style.display = 'none';
 
 		var tabs      = [ 'content', 'users', 'admin' ];
-		var tabLabels = { 'content': 'Content', 'users': 'Users', 'admin': 'Admin' };
+		var tabLabels = {
+			'content': wpqpData.strings.tabContent,
+			'users':   wpqpData.strings.tabUsers,
+			'admin':   wpqpData.strings.tabAdmin
+		};
 
 		tabs.forEach( function( tab ) {
 			var tabBtn = document.createElement( 'button' );
@@ -109,7 +113,7 @@
 			if ( ! wpqpData.isPro && ( tab === 'users' || tab === 'admin' ) ) {
 				var proBadge = document.createElement( 'span' );
 				proBadge.className = 'wpqp-pro-badge';
-				proBadge.textContent = 'Pro';
+				proBadge.textContent = wpqpData.strings.proBadge;
 				tabBtn.appendChild( proBadge );
 				tabBtn.disabled = true;
 			}
@@ -131,8 +135,8 @@
 		var input = document.createElement( 'input' );
 		input.type = 'text';
 		input.className = 'wpqp-input';
-		input.placeholder = 'Search...';
-		input.setAttribute( 'aria-label', 'Search' );
+		input.placeholder = wpqpData.strings.searchPlaceholder;
+		input.setAttribute( 'aria-label', wpqpData.strings.searchAriaLabel );
 		input.setAttribute( 'role', 'combobox' );
 		input.setAttribute( 'aria-autocomplete', 'list' );
 		input.setAttribute( 'aria-expanded', 'false' );
@@ -148,7 +152,7 @@
 		// Search button
 		var searchBtn = document.createElement( 'button' );
 		searchBtn.className = 'wpqp-search-btn';
-		searchBtn.setAttribute( 'aria-label', 'Search' );
+		searchBtn.setAttribute( 'aria-label', wpqpData.strings.searchAriaLabel );
 		searchBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
 		searchBtn.addEventListener( 'click', function( e ) {
 			e.preventDefault();
@@ -160,7 +164,7 @@
 		// Save search button (Pro only, shown when query is non-empty)
 		var saveSearchBtn = document.createElement( 'button' );
 		saveSearchBtn.className = 'wpqp-save-search-btn';
-		saveSearchBtn.setAttribute( 'aria-label', 'Save this search' );
+		saveSearchBtn.setAttribute( 'aria-label', wpqpData.strings.saveSearch );
 		saveSearchBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>';
 		saveSearchBtn.style.display = 'none';
 		saveSearchBtn.addEventListener( 'click', function( e ) {
@@ -175,7 +179,7 @@
 
 		var savedSearchesBtn = document.createElement( 'button' );
 		savedSearchesBtn.className = 'wpqp-saved-searches-btn';
-		savedSearchesBtn.setAttribute( 'aria-label', 'Saved searches' );
+		savedSearchesBtn.setAttribute( 'aria-label', wpqpData.strings.savedSearches );
 		savedSearchesBtn.setAttribute( 'aria-expanded', 'false' );
 		savedSearchesBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
 		savedSearchesBtn.addEventListener( 'click', function( e ) {
@@ -194,7 +198,7 @@
 		// Enter hint
 		var enterHint = document.createElement( 'span' );
 		enterHint.className = 'wpqp-enter-hint';
-		enterHint.textContent = 'Enter \u21B5';
+		enterHint.textContent = wpqpData.strings.enterHint;
 
 		inputActions.appendChild( searchBtn );
 		inputActions.appendChild( saveSearchBtn );
@@ -299,16 +303,21 @@
 
 		var themeLabel = document.createElement( 'div' );
 		themeLabel.className = 'wpqp-prefs-label';
-		themeLabel.textContent = 'Theme';
+		themeLabel.textContent = wpqpData.strings.theme;
 
 		var themeOptions = document.createElement( 'div' );
 		themeOptions.className = 'wpqp-prefs-options';
 
+		var themeLabels = {
+			'light': wpqpData.strings.themeLight,
+			'dark':  wpqpData.strings.themeDark,
+			'auto':  wpqpData.strings.themeAuto
+		};
 		var themes = [ 'light', 'dark', 'auto' ];
 		themes.forEach( function( themeVal ) {
 			var option = document.createElement( 'button' );
 			option.className = 'wpqp-prefs-option';
-			option.textContent = themeVal.charAt( 0 ).toUpperCase() + themeVal.slice( 1 );
+			option.textContent = themeLabels[ themeVal ];
 			option.setAttribute( 'data-theme', themeVal );
 			if ( wpqpData.theme === themeVal ) {
 				option.classList.add( 'wpqp-prefs-option--active' );
@@ -329,16 +338,20 @@
 
 		var densityLabel = document.createElement( 'div' );
 		densityLabel.className = 'wpqp-prefs-label';
-		densityLabel.textContent = 'Density';
+		densityLabel.textContent = wpqpData.strings.density;
 
 		var densityOptions = document.createElement( 'div' );
 		densityOptions.className = 'wpqp-prefs-options';
 
+		var densityLabels = {
+			'normal':  wpqpData.strings.densityNormal,
+			'compact': wpqpData.strings.densityCompact
+		};
 		var densities = [ 'normal', 'compact' ];
 		densities.forEach( function( densityVal ) {
 			var option = document.createElement( 'button' );
 			option.className = 'wpqp-prefs-option';
-			option.textContent = densityVal.charAt( 0 ).toUpperCase() + densityVal.slice( 1 );
+			option.textContent = densityLabels[ densityVal ];
 			option.setAttribute( 'data-density', densityVal );
 			if ( wpqpData.density === densityVal ) {
 				option.classList.add( 'wpqp-prefs-option--active' );
