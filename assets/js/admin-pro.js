@@ -39,8 +39,7 @@
 		if ( ! hasFavorites && ! hasHistory ) {
 			resultsContainer.innerHTML = '<div class="wpqp-empty">Start searching to see results. Star items to add favorites.</div>';
 			if ( WPQP.state.elements.panelsContainer ) {
-				WPQP.state.elements.panelsContainer.style.display = 'flex';
-				WPQP.state.elements.panelsContainer.classList.add( 'has-spacing' );
+				WPQP.state.elements.panelsContainer.classList.add( 'wpqp-visible', 'has-spacing' );
 			}
 			WPQP.state.elements.historyPanel.style.display   = 'flex';
 			WPQP.state.elements.favoritesPanel.style.display = 'flex';
@@ -58,7 +57,7 @@
 		var favoritesPanel = WPQP.state.elements.favoritesPanel;
 
 		if ( hasHistory || hasFavorites ) {
-			WPQP.state.elements.panelsContainer.style.display = 'flex';
+			WPQP.state.elements.panelsContainer.classList.add( 'wpqp-visible' );
 			historyPanel.style.display   = 'flex';
 			favoritesPanel.style.display = 'flex';
 
@@ -110,7 +109,7 @@
 		} else {
 			historyPanel.style.display   = 'none';
 			favoritesPanel.style.display = 'none';
-			WPQP.state.elements.panelsContainer.style.display = 'none';
+			WPQP.state.elements.panelsContainer.classList.remove( 'wpqp-visible' );
 		}
 
 		WPQP.state.flatItems    = [];
@@ -502,8 +501,7 @@
 		if ( ! hasFavorites && ! hasHistory ) {
 			resultsContainer.innerHTML = '<div class="wpqp-empty">Start searching, or star items to add favorites.</div>';
 			if ( WPQP.state.elements.panelsContainer ) {
-				WPQP.state.elements.panelsContainer.style.display = 'flex';
-				WPQP.state.elements.panelsContainer.classList.add( 'has-spacing' );
+				WPQP.state.elements.panelsContainer.classList.add( 'wpqp-visible', 'has-spacing' );
 			}
 			WPQP.state.elements.historyPanel.style.display   = 'flex';
 			WPQP.state.elements.favoritesPanel.style.display = 'flex';
@@ -521,7 +519,7 @@
 		var favoritesPanel = WPQP.state.elements.favoritesPanel;
 
 		if ( hasHistory || hasFavorites ) {
-			WPQP.state.elements.panelsContainer.style.display = 'flex';
+			WPQP.state.elements.panelsContainer.classList.add( 'wpqp-visible' );
 			historyPanel.style.display   = 'flex';
 			favoritesPanel.style.display = 'flex';
 
@@ -572,7 +570,7 @@
 		} else {
 			historyPanel.style.display   = 'none';
 			favoritesPanel.style.display = 'none';
-			WPQP.state.elements.panelsContainer.style.display = 'none';
+			WPQP.state.elements.panelsContainer.classList.remove( 'wpqp-visible' );
 		}
 
 		WPQP.state.flatItems    = [];

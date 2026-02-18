@@ -357,7 +357,10 @@
 	border-top: 1px solid var(--wpqp-border);
 	border-bottom: 1px solid var(--wpqp-border);
 	flex-shrink: 0;
+	animation: wpqp-content-in var(--wpqp-duration-fade) ease both;
 }
+
+/* .wpqp-results-scroll has no enter animation — items inside handle their own stagger */
 
 /* ==========================================================================
    Responsive Adjustments

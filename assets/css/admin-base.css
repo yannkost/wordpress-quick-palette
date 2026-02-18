@@ -48,6 +48,11 @@
 	--wpqp-item-height: auto;
 	--wpqp-border-radius: 4px;
 	--wpqp-border-radius-lg: 6px;
+
+	/* Animation */
+	--wpqp-duration-fade: 0.5s;    /* content elements fading in/out */
+	--wpqp-duration-panels: 0.5s; /* panels container height + opacity */
+	--wpqp-stagger-step: 20ms;     /* delay increment between staggered items */
 }
 
 /* Dark Theme */

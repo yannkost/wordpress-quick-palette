@@ -34,6 +34,8 @@
 	cursor: pointer;
 	transition: background-color 0.12s ease;
 	border-bottom: 1px solid var(--wpqp-border-light);
+	animation: wpqp-content-in var(--wpqp-duration-fade) ease both;
+	/* animation-delay set per-item in JS for staggering */
 }
 
 #wpqp-palette-root .wpqp-item:last-child,

@@ -52,16 +52,51 @@
 			WPQP.state.elements.results.style.display = 'flex';
 			WPQP.renderLoading();
 		} else {
-			// Empty query — show panels
+			// Empty query — fade out any existing results then show panels
 			WPQP.state.elements.results.style.display = 'flex';
 			WPQP.state.elements.results.classList.remove( 'has-results' );
-			if ( wpqpData.isPro ) {
-				WPQP.renderProSections();
-			} else {
-				WPQP.renderPanels();
-			}
 			WPQP.state.selectedIndex = -1;
 			WPQP.state.flatItems    = [];
+
+			var resultsEl = WPQP.state.elements.results;
+			var exitItems = Array.prototype.slice.call( resultsEl.querySelectorAll( '.wpqp-item' ) );
+
+			if ( exitItems.length > 0 ) {
+				// Read timing from CSS vars
+				var exitDuration = parseFloat( getComputedStyle( document.documentElement ).getPropertyValue( '--wpqp-duration-fade' ) ) * 1000 || 200;
+				var exitStep     = parseFloat( getComputedStyle( document.documentElement ).getPropertyValue( '--wpqp-stagger-step' ) ) || 20;
+				var exitCap      = 6;
+				var exitAnim     = 'wpqp-content-out ' + ( exitDuration / 1000 ) + 's ease both';
+
+				// Stagger-animate the heading out with the first item
+				var exitHeading = resultsEl.querySelector( '.wpqp-results-heading' );
+				if ( exitHeading ) {
+					exitHeading.style.animation = exitAnim;
+				}
+
+				// Stagger each item out top-to-bottom
+				exitItems.forEach( function( item, i ) {
+					item.style.animation      = exitAnim;
+					item.style.animationDelay = ( Math.min( i, exitCap ) * exitStep ) + 'ms';
+				} );
+
+				// Wait for the last item's animation to finish, then render panels
+				var totalExitMs = Math.min( exitItems.length - 1, exitCap ) * exitStep + exitDuration;
+				setTimeout( function() {
+					if ( wpqpData.isPro ) {
+						WPQP.renderProSections();
+					} else {
+						WPQP.renderPanels();
+					}
+				}, totalExitMs );
+			} else {
+				// No result items visible (loading / hint / empty) — swap immediately
+				if ( wpqpData.isPro ) {
+					WPQP.renderProSections();
+				} else {
+					WPQP.renderPanels();
+				}
+			}
 		}
 
 		// Debounce search (min 2 chars to match backend requirement)
@@ -161,7 +196,7 @@
 			WPQP.state.elements.favoritesPanel.style.display = 'none';
 		}
 		if ( WPQP.state.elements.panelsContainer ) {
-			WPQP.state.elements.panelsContainer.style.display = 'none';
+			WPQP.state.elements.panelsContainer.classList.remove( 'wpqp-visible' );
 		}
 	};
 
@@ -350,6 +385,11 @@
 		scrollWrapper.className = 'wpqp-results-scroll';
 		resultsContainer.appendChild( scrollWrapper );
 
+		// Read stagger timing from CSS vars
+		var staggerStep = parseFloat( getComputedStyle( document.documentElement ).getPropertyValue( '--wpqp-stagger-step' ) ) || 20;
+		var staggerIdx  = 0;
+		var staggerCap  = 8; // beyond this index all items share the same delay
+
 		// Render groups
 		for ( var postType in results ) {
 			if ( ! results.hasOwnProperty( postType ) || results[ postType ].length === 0 ) {
@@ -361,6 +401,8 @@
 
 			results[ postType ].forEach( function( item ) {
 				var itemEl = WPQP.createResultItem( item );
+				itemEl.style.animationDelay = ( Math.min( staggerIdx, staggerCap ) * staggerStep ) + 'ms';
+				staggerIdx++;
 				group.appendChild( itemEl );
 			} );
 
