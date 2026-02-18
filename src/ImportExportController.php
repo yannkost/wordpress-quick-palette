@@ -92,6 +92,7 @@ class ImportExportController {
 				array( 'message' => __( 'Permission denied.', 'wp-quick-palette' ) ),
 				403
 			);
+			return;
 		}
 
 		$user_id   = get_current_user_id();
@@ -140,6 +141,7 @@ class ImportExportController {
 				array( 'message' => __( 'Permission denied.', 'wp-quick-palette' ) ),
 				403
 			);
+			return;
 		}
 
 		$raw_json = isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
@@ -150,6 +152,16 @@ class ImportExportController {
 				array( 'message' => __( 'No data provided.', 'wp-quick-palette' ) ),
 				400
 			);
+			return;
+		}
+
+		// Enforce a 1MB size limit to prevent memory exhaustion.
+		if ( strlen( $raw_json ) > 1048576 ) {
+			wp_send_json_error(
+				array( 'message' => __( 'Import data is too large (max 1MB).', 'wp-quick-palette' ) ),
+				413
+			);
+			return;
 		}
 
 		$payload = json_decode( $raw_json, true );
@@ -163,6 +175,7 @@ class ImportExportController {
 				array( 'message' => __( 'Invalid export file. The file does not appear to be a valid WP Quick Palette export.', 'wp-quick-palette' ) ),
 				422
 			);
+			return;
 		}
 
 		$imported_favorites = 0;

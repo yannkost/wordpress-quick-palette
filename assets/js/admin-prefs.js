@@ -158,24 +158,24 @@
 			return;
 		}
 
-		var theme = wpqpData.theme || 'auto';
-		if ( theme !== 'auto' ) {
-			return;
-		}
-
 		var mediaQuery = window.matchMedia( '(prefers-color-scheme: dark)' );
+
+		// Always register the listener; check active theme inside handler
+		// so it works even if the user switches to 'auto' mid-session.
+		var handler = function() {
+			var root = document.getElementById( 'wpqp-palette-root' );
+			if ( root && root.getAttribute( 'data-theme' ) === 'auto' ) {
+				WPQP.updateAutoTheme();
+			}
+		};
 
 		// Modern browsers
 		if ( mediaQuery.addEventListener ) {
-			mediaQuery.addEventListener( 'change', function() {
-				WPQP.updateAutoTheme();
-			} );
+			mediaQuery.addEventListener( 'change', handler );
 		}
 		// Legacy browsers
 		else if ( mediaQuery.addListener ) {
-			mediaQuery.addListener( function() {
-				WPQP.updateAutoTheme();
-			} );
+			mediaQuery.addListener( handler );
 		}
 	};
 

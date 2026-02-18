@@ -28,6 +28,7 @@ class UserPreferencesController {
 				array( 'message' => __( 'You do not have permission to save preferences.', 'wp-quick-palette' ) ),
 				403
 			);
+			return;
 		}
 
 		$allowed_themes    = array( 'light', 'dark', 'auto' );

@@ -1019,7 +1019,11 @@
 	 */
 	WPQP.getRelativeTime = function( timestamp ) {
 		if ( typeof timestamp === 'string' ) {
-			timestamp = new Date( timestamp ).getTime() / 1000;
+			var parsed = new Date( timestamp ).getTime();
+			if ( isNaN( parsed ) ) {
+				return '';
+			}
+			timestamp = parsed / 1000;
 		}
 
 		var now  = Math.floor( Date.now() / 1000 );

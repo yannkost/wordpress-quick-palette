@@ -228,7 +228,12 @@ class DashboardWidget {
 		}
 
 		if ( 'admin' === $fav['type'] ) {
-			return admin_url( $fav['id'] );
+			$id = isset( $fav['id'] ) ? (string) $fav['id'] : '';
+			// If the stored id is already a full URL, use it directly.
+			if ( strpos( $id, 'http' ) === 0 ) {
+				return esc_url_raw( $id );
+			}
+			return admin_url( $id );
 		}
 
 		if ( 'comment' === $fav['type'] ) {

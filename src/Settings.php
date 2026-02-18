@@ -185,13 +185,13 @@ class Settings {
 
 		// Theme: whitelist
 		$allowed_themes = array( 'light', 'dark', 'auto' );
-		$sanitized['theme'] = in_array( $input['theme'], $allowed_themes, true )
+		$sanitized['theme'] = isset( $input['theme'] ) && in_array( $input['theme'], $allowed_themes, true )
 			? $input['theme']
 			: $defaults['theme'];
 
 		// Density: whitelist
 		$allowed_densities = array( 'normal', 'compact' );
-		$sanitized['default_density'] = in_array( $input['default_density'], $allowed_densities, true )
+		$sanitized['default_density'] = isset( $input['default_density'] ) && in_array( $input['default_density'], $allowed_densities, true )
 			? $input['default_density']
 			: $defaults['default_density'];
 

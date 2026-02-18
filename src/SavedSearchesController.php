@@ -211,6 +211,7 @@ class SavedSearchesController {
 				array( 'message' => __( 'You do not have permission to view saved searches.', 'wp-quick-palette' ) ),
 				403
 			);
+			return;
 		}
 
 		$user  = wp_get_current_user();
@@ -232,6 +233,7 @@ class SavedSearchesController {
 				array( 'message' => __( 'You do not have permission to search.', 'wp-quick-palette' ) ),
 				403
 			);
+			return;
 		}
 
 		$search_id = isset( $_POST['search_id'] ) ? sanitize_text_field( wp_unslash( $_POST['search_id'] ) ) : '';
@@ -241,6 +243,7 @@ class SavedSearchesController {
 				array( 'message' => __( 'Invalid search ID.', 'wp-quick-palette' ) ),
 				400
 			);
+			return;
 		}
 
 		$user    = wp_get_current_user();
@@ -261,6 +264,7 @@ class SavedSearchesController {
 				array( 'message' => __( 'Saved search not found or access denied.', 'wp-quick-palette' ) ),
 				404
 			);
+			return;
 		}
 
 		// Execute the query
@@ -339,11 +343,13 @@ class SavedSearchesController {
 				array( 'message' => __( 'You do not have permission to save searches.', 'wp-quick-palette' ) ),
 				403
 			);
+			return;
 		}
 
 		$id         = isset( $_POST['id'] ) ? sanitize_key( wp_unslash( $_POST['id'] ) ) : '';
 		$label      = isset( $_POST['label'] ) ? sanitize_text_field( wp_unslash( $_POST['label'] ) ) : '';
 		$query_args = isset( $_POST['query_args'] ) ? json_decode( wp_unslash( $_POST['query_args'] ), true ) : array();
+		$query_args = is_array( $query_args ) ? $this->sanitize_query_args( $query_args ) : array();
 		$roles      = isset( $_POST['roles'] ) ? array_map( 'sanitize_key', wp_unslash( (array) $_POST['roles'] ) ) : array();
 
 		if ( empty( $id ) || empty( $label ) ) {
@@ -351,6 +357,7 @@ class SavedSearchesController {
 				array( 'message' => __( 'ID and label are required.', 'wp-quick-palette' ) ),
 				400
 			);
+			return;
 		}
 
 		$saved_searches = self::get_saved_searches();
@@ -399,6 +406,7 @@ class SavedSearchesController {
 				array( 'message' => __( 'You do not have permission to delete searches.', 'wp-quick-palette' ) ),
 				403
 			);
+			return;
 		}
 
 		$id = isset( $_POST['id'] ) ? sanitize_key( wp_unslash( $_POST['id'] ) ) : '';
@@ -408,6 +416,7 @@ class SavedSearchesController {
 				array( 'message' => __( 'Invalid search ID.', 'wp-quick-palette' ) ),
 				400
 			);
+			return;
 		}
 
 		$saved_searches = self::get_saved_searches();
@@ -427,6 +436,7 @@ class SavedSearchesController {
 				array( 'message' => __( 'Saved search not found or cannot be deleted.', 'wp-quick-palette' ) ),
 				404
 			);
+			return;
 		}
 
 		// Re-index array
@@ -440,5 +450,55 @@ class SavedSearchesController {
 				'message'        => __( 'Saved search deleted.', 'wp-quick-palette' ),
 			)
 		);
+	}
+
+	/**
+	 * Sanitize query_args using an allow-list of safe keys.
+	 *
+	 * @param array $args Raw query args.
+	 * @return array Sanitized query args.
+	 */
+	private function sanitize_query_args( array $args ) {
+		$allowed_keys = array(
+			'post_type',
+			'post_status',
+			'posts_per_page',
+			'author',
+			'orderby',
+			'order',
+			'meta_key',
+			'meta_value',
+			'meta_compare',
+			'date_query',
+			'meta_query',
+			'category_name',
+			'tag',
+			'tax_query',
+			's',
+		);
+
+		$safe = array();
+		foreach ( $args as $key => $value ) {
+			if ( in_array( $key, $allowed_keys, true ) ) {
+				$safe[ $key ] = $this->deep_sanitize( $value );
+			}
+		}
+		return $safe;
+	}
+
+	/**
+	 * Recursively sanitize a scalar or array value.
+	 *
+	 * @param mixed $value Value to sanitize.
+	 * @return mixed
+	 */
+	private function deep_sanitize( $value ) {
+		if ( is_array( $value ) ) {
+			return array_map( array( $this, 'deep_sanitize' ), $value );
+		}
+		if ( is_int( $value ) || is_float( $value ) ) {
+			return $value;
+		}
+		return sanitize_text_field( (string) $value );
 	}
 }

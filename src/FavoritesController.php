@@ -30,16 +30,20 @@ class FavoritesController {
 				array( 'message' => __( 'You do not have permission to manage favorites.', 'wp-quick-palette' ) ),
 				403
 			);
+			return;
 		}
 
-		$type = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '';
-		$id   = isset( $_POST['id'] ) ? absint( $_POST['id'] ) : 0;
+		$type   = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '';
+		// Admin-type favorites use URL slugs as IDs; all other types use integer post/user IDs.
+		$id_raw = isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : '';
+		$id     = ( 'admin' === $type ) ? $id_raw : absint( $id_raw );
 
-		if ( empty( $type ) || empty( $id ) ) {
+		if ( empty( $type ) || ( '' === $id || 0 === $id ) ) {
 			wp_send_json_error(
 				array( 'message' => __( 'Invalid item.', 'wp-quick-palette' ) ),
 				400
 			);
+			return;
 		}
 
 		$title    = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
@@ -55,7 +59,8 @@ class FavoritesController {
 		// Check if already favorited.
 		$existing_index = null;
 		foreach ( $favorites as $index => $fav ) {
-			if ( isset( $fav['type'], $fav['id'] ) && $fav['type'] === $type && (int) $fav['id'] === $id ) {
+			// Use loose string comparison so both int and slug IDs match correctly.
+			if ( isset( $fav['type'], $fav['id'] ) && $fav['type'] === $type && (string) $fav['id'] === (string) $id ) {
 				$existing_index = $index;
 				break;
 			}
@@ -101,6 +106,7 @@ class FavoritesController {
 				array( 'message' => __( 'You do not have permission to view favorites.', 'wp-quick-palette' ) ),
 				403
 			);
+			return;
 		}
 
 		$user_id   = get_current_user_id();
@@ -143,15 +149,17 @@ class FavoritesController {
 				array( 'message' => __( 'You do not have permission to reorder favorites.', 'wp-quick-palette' ) ),
 				403
 			);
+			return;
 		}
 
 		$order = isset( $_POST['order'] ) ? json_decode( wp_unslash( $_POST['order'] ), true ) : array();
 
-		if ( ! is_array( $order ) || empty( $order ) ) {
+		if ( ! is_array( $order ) || empty( $order ) || count( $order ) > 200 ) {
 			wp_send_json_error(
 				array( 'message' => __( 'Invalid order data.', 'wp-quick-palette' ) ),
 				400
 			);
+			return;
 		}
 
 		$user_id = get_current_user_id();

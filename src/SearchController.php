@@ -25,6 +25,7 @@ class SearchController {
 				array( 'message' => __( 'You do not have permission to search.', 'wp-quick-palette' ) ),
 				403
 			);
+			return;
 		}
 
 		$search_term = isset( $_POST['q'] ) ? sanitize_text_field( wp_unslash( $_POST['q'] ) ) : '';
@@ -42,6 +43,7 @@ class SearchController {
 					),
 				)
 			);
+			return;
 		}
 
 		$results = array();

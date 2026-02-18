@@ -294,7 +294,7 @@
 
 			matched.push( {
 				type:     'admin',
-				id:       item.title,
+				id:       url || item.title, // store raw URL slug as id for DashboardWidget
 				title:    item.title,
 				edit_url: editUrl,
 				parent:   item.parent || '',
@@ -768,8 +768,12 @@
 		if ( text.indexOf( '&' ) === -1 ) {
 			return text;
 		}
-		var doc = new DOMParser().parseFromString( text, 'text/html' );
-		return doc.body.textContent || '';
+		// Reuse a single textarea element (lighter than DOMParser per call).
+		if ( ! WPQP._decoderEl ) {
+			WPQP._decoderEl = document.createElement( 'textarea' );
+		}
+		WPQP._decoderEl.innerHTML = text;
+		return WPQP._decoderEl.value;
 	};
 
 	/**

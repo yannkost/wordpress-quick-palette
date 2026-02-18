@@ -6,27 +6,40 @@ A Craft-inspired command palette and quick search for the WordPress admin. Insta
 
 ### Lite (Free)
 
-- **Command Palette**: Press `Ctrl+K` (or `Cmd+K` on Mac) to open a fast search overlay
-- **Smart Search**: Search posts, pages, and public custom post types by title
+- **Command Palette**: Press `Ctrl+G` (or `Cmd+G` on Mac) to open a fast search overlay
+- **Smart Content Search**: Search posts, pages, and public custom post types by title
+- **Comments Search**: Find comments by author or content (users with moderate_comments capability)
+- **Type Filter Chips**: Click to filter results by post type
+- **Grouped Results**: Results organized by post type with item counts (e.g., "Posts (3)")
+- **Status Badges**: Color-coded post status indicators (Published, Draft, Pending, Private, Scheduled)
+- **Relative Time**: Shows last modified time for each result (e.g., "Updated 2 hours ago")
 - **Relevance Sorting**: "Starts-with" matches ranked above "contains" for better results
-- **Grouped Results**: Results organized by post type with color-coded status badges
-- **Quick Actions**: Open edit screen or view front-end
-- **Per-User Preferences**: Override theme and density via in-palette gear icon
+- **Copy Actions**: Copy URL, Title, or ID for any result item
+- **Favorites Panel**: Star/unstar items for instant access (no Pro required)
+- **History Panel**: Auto-track recently opened items
+- **Keyboard Shortcuts**:
+  - `Alt+1` through `Alt+9` jump to first 9 favorites (works even when palette closed)
+  - `↑↓` navigate results, `Enter` to open, `Esc` to close
+  - `Ctrl+Enter` to open in new tab
+- **Drag Reordering**: Rearrange favorites by dragging
+- **Highlighted Favorites**: Starred items show subtle accent tint in results
+- **Per-User Preferences**: Override theme and density via in-palette gear icon (saved server-side)
 - **UI Modes**: Normal and compact density options
-- **Themes**: Light, dark, or auto (matches WordPress admin)
+- **Themes**: Light, dark, or auto (matches WordPress admin preference)
 - **Accessibility**: WCAG 2.1 AA — ARIA combobox pattern, live regions, focus trapping
 - **Admin Integration**: Keyboard shortcut and optional toolbar icon
+- **Internationalization**: Full i18n support; all strings localizable via wpqpData.strings
+- **Animations**: Staggered enter/exit animations on results
 - **Settings**: Global configuration for shortcuts, post types, density, and theme
 
 ### Pro (Unlockable)
 
-- Favorites (star/unstar items, auto-cleanup of stale entries)
-- History (track recently opened posts, clear history button)
-- Inline search bar (compact bar below admin toolbar with dropdown results)
-- Saved searches (create named filters for common queries — planned)
-- Role-based personalization (customize by user role — planned)
-- Advanced theming (custom accent colors — planned)
-- Developer API for custom commands (planned)
+- **Users Search**: Search WordPress users by username, email, or display name (u: prefix)
+- **Admin Screens Search**: Search admin menu items and settings pages client-side (a: prefix)
+- **Saved Searches**: Create, save, and reorder named search presets for common queries
+- **Built-In Presets**: Pre-configured searches like "Draft posts" and "Pending pages"
+- **Dashboard Widget**: Display favorites and history on the WordPress dashboard
+- **Import/Export**: Download and upload favorites and saved searches as JSON
 
 For complete feature details, see `PLAN.md` in the project root.
 
@@ -45,13 +58,13 @@ No additional dependencies or build tools are required.
 1. Download the plugin from [WordPress.org](https://wordpress.org/plugins/wp-quick-palette/) or clone this repository to `/wp-content/plugins/wp-quick-palette/`.
 2. Activate the plugin from the **Plugins** menu in WordPress admin.
 3. Navigate to **Settings → Quick Palette** to configure.
-4. Press `Ctrl+K` to open the command palette.
+4. Press `Ctrl+G` to open the command palette.
 
 ### For Developers
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/wp-quick-palette.git
+   git clone https://github.com/yannkost/wp-quick-palette.git
    cd wp-quick-palette
    ```
 
@@ -64,7 +77,7 @@ No additional dependencies or build tools are required.
 
 4. Visit **Settings → Quick Palette** to test the settings page.
 
-5. Press `Ctrl+K` in the admin to test the command palette.
+5. Press `Ctrl+G` in the admin to test the command palette.
 
 ## Development Workflow
 
@@ -72,10 +85,10 @@ No additional dependencies or build tools are required.
 
 This plugin uses vanilla JavaScript and CSS—no build tools like Webpack or Gulp are needed. Edit source files directly:
 
-- **JavaScript**: `/assets/js/admin.js`
-- **CSS**: `/assets/css/admin.css`
+- **JavaScript**: `/assets/js/` (split into 7 modules)
+- **CSS**: `/assets/css/` (split into 6 modules)
 - **PHP**: `/src/` (all classes)
-- **Settings Template**: `/templates/settings-page.php` (created during phase 2)
+- **Settings Template**: `/templates/settings-page.php`
 
 ### Hot Reload
 
@@ -84,7 +97,7 @@ For local development, use a simple HTTP server or WordPress local environment. 
 ### Testing the Command Palette
 
 1. Open any WordPress admin page
-2. Press `Ctrl+K` (or `Cmd+K`) to open the palette
+2. Press `Ctrl+G` (or `Cmd+G`) to open the palette
 3. Start typing to search posts or pages
 4. Use arrow keys to navigate, Enter to select, ESC to close
 
@@ -100,6 +113,7 @@ For local development, use a simple HTTP server or WordPress local environment. 
 ```
 wp-quick-palette/
 ├── wp-quick-palette.php          # Main plugin file (bootstrap, constants, hooks)
+├── uninstall.php                 # Cleanup on plugin deletion
 ├── readme.txt                    # WordPress.org plugin repository description
 ├── README.md                     # This file
 ├── PLAN.md                       # Product roadmap and technical design
@@ -118,47 +132,63 @@ wp-quick-palette/
 │   │   └── Utils.php             # Utility functions
 │   ├── FavoritesController.php   # (Pro) Favorites management (stale cleanup)
 │   ├── HistoryController.php     # (Pro) History tracking (clear endpoint)
-│   ├── InlineSearch.php          # (Pro) Header search bar
-│   ├── SavedSearchesController.php # (Pro, planned) Saved filters
-│   ├── Roles.php                 # (Pro, planned) Role-based settings
-│   └── Commands.php              # (Pro, planned) Custom command API
+│   ├── SavedSearchesController.php # (Pro) Saved searches CRUD
+│   ├── DashboardWidget.php       # (Pro) Dashboard widget display
+│   └── ImportExportController.php # (Pro) JSON import/export
 ├── assets/
 │   ├── css/
-│   │   ├── admin.css             # Main stylesheet
-│   │   └── admin-dark.css        # (Planned) Dark mode overrides
+│   │   ├── admin-base.css        # Base styles (light default, dark via CSS variables)
+│   │   ├── admin-palette.css     # Palette container styles
+│   │   ├── admin-items.css       # Result item styles
+│   │   ├── admin-panels.css      # Panels (favorites, history) styles
+│   │   ├── admin-dropdowns.css   # Dropdown menu styles
+│   │   └── admin-states.css      # State/variant styles (draft, pending, etc.)
 │   └── js/
-│       └── admin.js              # Command palette & UI logic
+│       ├── admin-core.js         # Core palette logic
+│       ├── admin-dom.js          # DOM manipulation
+│       ├── admin-search.js       # Search functionality
+│       ├── admin-prefs.js        # User preferences
+│       ├── admin-copy.js         # Copy actions
+│       ├── admin-pro.js          # Pro-only features
+│       └── admin-init.js         # Initialization
 ├── templates/
-│   └── settings-page.php         # (Created in phase 2) Settings form HTML
+│   └── settings-page.php         # Settings form HTML
 ├── languages/
-│   └── wp-quick-palette.pot      # (Planned) Translation template
-└── pro/                          # (Future) Pro-only code
-    ├── ProBootstrap.php
-    └── License.php
+│   └── wp-quick-palette.pot      # Translation template
+└── PLAN.md                       # Full product roadmap
 ```
 
 ## Key Classes
 
 ### `Plugin.php`
-Orchestrates the plugin. Instantiates Assets, Settings, SearchController, AdminBar, and (when Pro is active) Pro-specific classes.
+Orchestrates the plugin. Instantiates Assets, Settings, SearchController, AdminBar, UserPreferencesController, and (when Pro is active) Pro-specific classes.
 
 ### `Assets.php`
-Enqueues admin CSS and JavaScript. Localizes configuration data to the frontend (settings, post types, theme, density, etc.).
+Enqueues admin CSS and JavaScript. Localizes configuration data to the frontend (settings, post types, theme, density, user preferences, strings, etc.).
 
 ### `Settings.php`
 Registers the settings page under **Settings → Quick Palette**. Manages option persistence and sanitization.
 
 ### `SearchController.php`
-Handles AJAX requests to `/wp-admin/admin-ajax.php?action=wpqp_search`. Queries posts/pages/CPTs and returns JSON results.
+Handles AJAX requests to `/wp-admin/admin-ajax.php?action=wpqp_search`. Queries posts/pages/CPTs and comments, returns JSON results with relevance sorting.
 
 ### `AdminBar.php`
 Adds optional icon to the WordPress admin toolbar.
+
+### `UserPreferencesController.php`
+Handles AJAX endpoint for saving per-user theme and density preferences.
 
 ### `Helpers/Options.php`
 Centralized access to plugin options with defaults and validation.
 
 ### `Helpers/UserMeta.php`
-Manages per-user preferences (theme override, density, inline bar visibility).
+Manages per-user preferences (theme override, density).
+
+### `Helpers/Capabilities.php`
+Checks user capabilities for features like comment search.
+
+### `Helpers/Utils.php`
+Utility functions including relative time formatting and post type labels.
 
 ## Global Options Structure
 
@@ -167,53 +197,73 @@ The plugin stores configuration in the WordPress options table under `wp_quick_p
 ```php
 [
     'enabled'              => true,           // Enable/disable
-    'shortcut'             => 'ctrl+g',       // Keyboard shortcut
+    'shortcut'             => 'ctrl+g',       // Keyboard shortcut (presets: ctrl+g, ctrl+k, ctrl+/)
     'show_admin_bar_icon'  => true,           // Toolbar icon
     'default_density'      => 'normal',       // normal|compact
     'theme'                => 'auto',         // light|dark|auto
     'search_post_types'    => ['post', 'page'],
-    'pro' => [                                // Pro settings
-        'inline_search_enabled' => false,
+    'pro' => [                                // Pro settings (when Pro active)
+        'saved_searches_limit'  => 20,
         'history_limit'         => 50,
-        'role_based_settings'   => [],
+        'favorites_limit'       => 25,
+        'enable_users_search'   => true,
+        'enable_admin_search'   => true,
     ],
+]
+```
+
+## User Meta Preferences
+
+Per-user preferences stored under `wpqp_preferences`:
+
+```php
+[
+    'theme'          => 'auto',    // overrides global theme
+    'density'        => 'normal',  // normal|compact
 ]
 ```
 
 ## Search Implementation
 
-The plugin queries posts via `WP_Query` with title-only search. Results are sorted by relevance (starts-with first, then contains) and limited to 8 items per post type. Response includes:
+The plugin queries posts via `WP_Query` with title-only search. Comments are queried via `get_comments()`. Results are sorted by relevance (starts-with first, then contains) and limited to 8 items per post type. Response includes:
 
-- `type` — post type slug
-- `id` — post ID
-- `title` — post title
-- `status` — post status (publish, draft, pending, private, future)
-- `modified_date` — ISO 8601 modified date
-- `created_date` — ISO 8601 created date
+- `type` — post type slug or 'comment'
+- `id` — post ID or comment ID
+- `title` — post title or comment snippet
+- `status` — post status or 'approved'/'unapproved'
+- `relative_time` — "Updated X ago"
 - `edit_url` — admin edit link
 - `view_url` — front-end permalink (if public)
 
+Search type tabs (Pro):
+- `c:` or `content:` — search content (posts, pages, CPTs)
+- `u:` or `users:` — search WordPress users
+- `a:` or `admin:` — search admin screens
+
 ## Hooks & Actions
 
-### Filters & Actions
+### Core Hooks
 
 - `plugins_loaded` — Initialize the plugin
 - `admin_enqueue_scripts` — Enqueue assets
 - `admin_bar_menu` — Add toolbar icon
 - `admin_menu` — Register settings page
 - `wp_ajax_wpqp_search` — AJAX search endpoint
-
-Lite actions:
-
 - `wp_ajax_wpqp_save_preferences` — Save per-user theme/density preferences
+- `admin_footer` — Inject palette root container
 
-Pro actions:
+### Pro Hooks (when Pro active)
 
 - `wp_ajax_wpqp_toggle_favorite` — Star/unstar items
 - `wp_ajax_wpqp_get_favorites` — Retrieve favorites
 - `wp_ajax_wpqp_record_history` — Record navigation history
 - `wp_ajax_wpqp_get_history` — Retrieve history
 - `wp_ajax_wpqp_clear_history` — Clear user's history
+- `wp_ajax_wpqp_save_search` — Save search preset
+- `wp_ajax_wpqp_get_saved_searches` — Retrieve saved searches
+- `wp_ajax_wpqp_delete_saved_search` — Delete saved search
+- `wp_ajax_wpqp_import_data` — Import favorites/searches
+- `wp_ajax_wpqp_export_data` — Export favorites/searches
 
 ## Contributing
 
@@ -264,8 +314,8 @@ This plugin is licensed under the GPLv2 or later. See `LICENSE` file or [https:/
 See `PLAN.md` for the complete product roadmap, including:
 - **Phase 1** (MVP): Core command palette with search — **complete**
 - **Phase 2** (Polish): Relevance sorting, status badges, per-user preferences, accessibility — **complete**
-- **Phase 3** (Pro): Favorites, history, inline search bar — **complete**
-- **Phase 4** (planned): Saved searches, role-based settings, custom commands API
+- **Phase 3** (Pro): Favorites, history, saved searches, users/admin search — **complete**
+- **Phase 4** (planned): Multi-site support, WooCommerce integration, advanced role-based settings
 
 ## Support
 

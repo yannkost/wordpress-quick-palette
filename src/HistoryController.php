@@ -38,6 +38,7 @@ class HistoryController {
 				array( 'message' => __( 'You do not have permission to record history.', 'wp-quick-palette' ) ),
 				403
 			);
+			return;
 		}
 
 		$type = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '';
@@ -48,6 +49,7 @@ class HistoryController {
 				array( 'message' => __( 'Invalid item.', 'wp-quick-palette' ) ),
 				400
 			);
+			return;
 		}
 
 		$title    = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
@@ -103,6 +105,7 @@ class HistoryController {
 				array( 'message' => __( 'You do not have permission to view history.', 'wp-quick-palette' ) ),
 				403
 			);
+			return;
 		}
 
 		$user_id = get_current_user_id();
@@ -145,6 +148,7 @@ class HistoryController {
 				array( 'message' => __( 'You do not have permission to clear history.', 'wp-quick-palette' ) ),
 				403
 			);
+			return;
 		}
 
 		$user_id = get_current_user_id();

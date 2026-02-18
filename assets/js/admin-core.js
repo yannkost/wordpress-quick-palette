@@ -145,6 +145,12 @@ if ( typeof wpqpData === 'undefined' ) {
 
 		WPQP.state.isOpen = false;
 
+		// Abort any pending search so stale results don't render after close.
+		if ( WPQP.state.searchAbortController ) {
+			WPQP.state.searchAbortController.abort();
+			WPQP.state.searchAbortController = null;
+		}
+
 		var overlay = WPQP.state.elements.overlay;
 
 		overlay.classList.remove( 'wpqp-open' );
