@@ -60,7 +60,6 @@ class Assets {
 				'enabled'              => (bool) Options::get( 'enabled' ),
 				'isPro'                => $is_pro,
 				'historyLimit'         => (int) $all_options['pro']['history_limit'],
-				'inlineSearchEnabled'  => $is_pro && ! empty( $all_options['pro']['inline_search_enabled'] ),
 			)
 		);
 	}

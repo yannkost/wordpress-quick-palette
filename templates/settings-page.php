@@ -33,23 +33,7 @@ defined( 'ABSPATH' ) || exit;
 
 				<table class="form-table" role="presentation" style="opacity: 0.6; pointer-events: none;">
 					<tbody>
-						<!-- Inline Search Bar -->
-						<tr>
-							<th scope="row">
-								<?php esc_html_e( 'Inline Search Bar', 'wp-quick-palette' ); ?>
-							</th>
-							<td>
-								<label>
-									<input type="checkbox" disabled checked />
-									<?php esc_html_e( 'Enable always-visible inline search bar in admin header', 'wp-quick-palette' ); ?>
-								</label>
-								<p class="description">
-									<?php esc_html_e( 'Display a compact search bar for quick access without keyboard shortcuts.', 'wp-quick-palette' ); ?>
-								</p>
-							</td>
-						</tr>
-
-						<!-- History Limit -->
+							<!-- History Limit -->
 						<tr>
 							<th scope="row">
 								<?php esc_html_e( 'History Limit', 'wp-quick-palette' ); ?>

@@ -137,14 +137,6 @@ class Settings {
 			);
 
 			add_settings_field(
-				'inline_search_enabled',
-				__( 'Inline Search Bar', 'wp-quick-palette' ),
-				array( $this, 'field_inline_search_enabled' ),
-				'wp-quick-palette',
-				'wpqp_pro'
-			);
-
-			add_settings_field(
 				'saved_searches_list',
 				__( 'Saved Searches', 'wp-quick-palette' ),
 				array( $this, 'field_saved_searches_list' ),
@@ -214,7 +206,6 @@ class Settings {
 				$sanitized['pro']['history_limit'] = max( 10, min( 200, $limit ) );
 			}
 
-			$sanitized['pro']['inline_search_enabled'] = ! empty( $input['pro']['inline_search_enabled'] );
 		}
 
 		return $sanitized;
@@ -395,25 +386,6 @@ class Settings {
 		/>
 		<p class="description">
 			<?php esc_html_e( 'Number of recent items to keep in your history (10-200).', 'wp-quick-palette' ); ?>
-		</p>
-		<?php
-	}
-
-	public function field_inline_search_enabled() {
-		$options = Options::get_all();
-		$enabled = ! empty( $options['pro']['inline_search_enabled'] );
-		?>
-		<label>
-			<input
-				type="checkbox"
-				name="<?php echo esc_attr( Options::OPTION_NAME ); ?>[pro][inline_search_enabled]"
-				value="1"
-				<?php checked( $enabled, true ); ?>
-			/>
-			<?php esc_html_e( 'Show a compact search bar in the admin header', 'wp-quick-palette' ); ?>
-		</label>
-		<p class="description">
-			<?php esc_html_e( 'When enabled, a quick search bar appears below the admin toolbar. Users can hide it via their personal preferences.', 'wp-quick-palette' ); ?>
 		</p>
 		<?php
 	}

@@ -22,7 +22,6 @@ class Options {
 			'theme'               => 'auto',
 			'search_post_types'   => array( 'post', 'page' ),
 			'pro'                 => array(
-				'inline_search_enabled' => false,
 				'history_limit'         => 50,
 				'role_based_settings'   => array(),
 			),

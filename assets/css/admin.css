@@ -446,30 +446,117 @@
 }
 
 /* ==========================================================================
-   Saved Searches Section (Pro)
+   Saved Searches Dropdown (Pro)
    ========================================================================== */
 
-#wpqp-palette-root .wpqp-saved-searches-section {
-	display: none;
-	border-bottom: 1px solid var(--wpqp-border);
-}
-
-#wpqp-palette-root .wpqp-section-heading {
-	padding: var(--wpqp-spacing-sm) var(--wpqp-spacing-lg);
-	font-size: var(--wpqp-font-size-xs);
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
-	color: var(--wpqp-text-muted);
-	background: var(--wpqp-bg-secondary);
-}
-
-#wpqp-palette-root .wpqp-saved-list {
+#wpqp-palette-root .wpqp-saved-searches-wrap {
+	position: relative;
 	display: flex;
-	flex-wrap: wrap;
-	gap: var(--wpqp-spacing-sm);
-	padding: var(--wpqp-spacing-md) var(--wpqp-spacing-lg);
-	background: var(--wpqp-bg-secondary);
+	align-items: center;
+}
+
+#wpqp-palette-root .wpqp-saved-searches-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: none;
+	border-radius: var(--wpqp-radius);
+	background: transparent;
+	color: var(--wpqp-text-muted);
+	cursor: pointer;
+	transition: color 0.15s ease, background 0.15s ease;
+}
+
+#wpqp-palette-root .wpqp-saved-searches-btn:hover,
+#wpqp-palette-root .wpqp-saved-searches-btn--active {
+	color: var(--wpqp-accent);
+	background: var(--wpqp-bg-hover);
+}
+
+#wpqp-palette-root .wpqp-saved-searches-btn svg {
+	width: 16px;
+	height: 16px;
+}
+
+#wpqp-palette-root .wpqp-saved-searches-dropdown {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	margin-top: 4px;
+	min-width: 240px;
+	max-width: 320px;
+	max-height: 280px;
+	overflow-y: auto;
+	background: var(--wpqp-bg);
+	border: 1px solid var(--wpqp-border);
+	border-radius: 12px;
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.08);
+	z-index: 100001;
+}
+
+#wpqp-palette-root .wpqp-saved-dropdown-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 8px 12px;
+	cursor: pointer;
+	border-bottom: 1px solid var(--wpqp-border-light);
+	transition: background 0.1s ease;
+}
+
+#wpqp-palette-root .wpqp-saved-dropdown-item:last-child {
+	border-bottom: none;
+}
+
+#wpqp-palette-root .wpqp-saved-dropdown-item:hover {
+	background: var(--wpqp-bg-hover);
+}
+
+#wpqp-palette-root .wpqp-saved-dropdown-label {
+	flex: 1;
+	min-width: 0;
+	font-size: 13px;
+	color: var(--wpqp-text);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+#wpqp-palette-root .wpqp-saved-dropdown-delete {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	border: none;
+	border-radius: 3px;
+	background: transparent;
+	color: var(--wpqp-text-muted);
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease;
+}
+
+#wpqp-palette-root .wpqp-saved-dropdown-item:hover .wpqp-saved-dropdown-delete {
+	opacity: 1;
+}
+
+#wpqp-palette-root .wpqp-saved-dropdown-delete:hover {
+	color: #dc2626;
+	background: rgba(220, 38, 38, 0.1);
+}
+
+#wpqp-palette-root .wpqp-saved-dropdown-empty {
+	padding: 12px;
+	text-align: center;
+	color: var(--wpqp-text-muted);
+	font-size: 13px;
 }
 
 /* ==========================================================================
@@ -996,6 +1083,20 @@
 }
 
 /* ==========================================================================
+   Hint State
+   ========================================================================== */
+
+#wpqp-palette-root .wpqp-hint {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--wpqp-spacing-xl);
+	color: var(--wpqp-text-muted);
+	font-size: var(--wpqp-font-size-sm);
+	font-style: italic;
+}
+
+/* ==========================================================================
    Screen Reader Only
    ========================================================================== */
 
@@ -1096,174 +1197,3 @@
 	}
 }
 
-/* ==========================================================================
-   Inline Search Bar (Pro)
-   ========================================================================== */
-
-#wpqp-inline-search-root.wpqp-inline-bar {
-	position: fixed;
-	top: 32px;
-	right: 16px;
-	z-index: 99999;
-	width: 280px;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-}
-
-/* Adjust for mobile admin bar */
-@media screen and (max-width: 782px) {
-	#wpqp-inline-search-root.wpqp-inline-bar {
-		top: 46px;
-	}
-}
-
-.wpqp-inline-input {
-	width: 100%;
-	padding: 6px 12px;
-	font-size: 13px;
-	color: #29323d;
-	background: #ffffff;
-	border: 1px solid #b8c3ce;
-	border-radius: 6px;
-	outline: none;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-	box-sizing: border-box;
-	transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.wpqp-inline-input:focus {
-	border-color: #3b82f6;
-	box-shadow: 0 1px 3px rgba(59, 130, 246, 0.2);
-}
-
-.wpqp-inline-input::placeholder {
-	color: #7b8793;
-}
-
-.wpqp-inline-dropdown {
-	display: none;
-	position: absolute;
-	top: 100%;
-	left: 0;
-	right: 0;
-	margin-top: 4px;
-	background: #ffffff;
-	border: 1px solid #e3e5e8;
-	border-radius: 6px;
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-	max-height: 320px;
-	overflow-y: auto;
-	z-index: 99999;
-}
-
-.wpqp-inline-item {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 8px 12px;
-	cursor: pointer;
-	border-bottom: 1px solid #f0f0f0;
-	transition: background 0.1s ease;
-}
-
-.wpqp-inline-item:last-child {
-	border-bottom: none;
-}
-
-.wpqp-inline-item:hover,
-.wpqp-inline-item.wpqp-inline-item--selected {
-	background: #f3f7fc;
-}
-
-.wpqp-inline-item-title {
-	font-size: 13px;
-	color: #29323d;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	flex: 1;
-	min-width: 0;
-}
-
-.wpqp-inline-item-type {
-	font-size: 11px;
-	font-weight: 600;
-	color: #7b8793;
-	margin-left: 8px;
-	flex-shrink: 0;
-}
-
-.wpqp-inline-empty {
-	padding: 12px;
-	text-align: center;
-	color: #7b8793;
-	font-size: 13px;
-}
-
-.wpqp-inline-see-all {
-	padding: 8px 12px;
-	text-align: center;
-	font-size: 12px;
-	color: #3b82f6;
-	cursor: pointer;
-	border-top: 1px solid #e3e5e8;
-	transition: background 0.1s ease;
-}
-
-.wpqp-inline-see-all:hover {
-	background: #f3f7fc;
-}
-
-/* Dark mode for inline search */
-@media (prefers-color-scheme: dark) {
-	.wpqp-inline-input {
-		color: #e0e2e6;
-		background: #2a2a3a;
-		border-color: #3e3e50;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-	}
-
-	.wpqp-inline-input:focus {
-		border-color: #60a5fa;
-		box-shadow: 0 1px 3px rgba(96, 165, 250, 0.2);
-	}
-
-	.wpqp-inline-input::placeholder {
-		color: #9e9eb0;
-	}
-
-	.wpqp-inline-dropdown {
-		background: #1e1e2e;
-		border-color: #2e2e3e;
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-	}
-
-	.wpqp-inline-item {
-		border-bottom-color: #2e2e3e;
-	}
-
-	.wpqp-inline-item:hover,
-	.wpqp-inline-item.wpqp-inline-item--selected {
-		background: #2a2e3a;
-	}
-
-	.wpqp-inline-item-title {
-		color: #e0e2e6;
-	}
-
-	.wpqp-inline-item-type {
-		color: #9e9eb0;
-	}
-
-	.wpqp-inline-empty {
-		color: #9e9eb0;
-	}
-
-	.wpqp-inline-see-all {
-		color: #60a5fa;
-		border-top-color: #2e2e3e;
-	}
-
-	.wpqp-inline-see-all:hover {
-		background: #2a2e3a;
-	}
-}
