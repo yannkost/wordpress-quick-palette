@@ -80,7 +80,10 @@ class HistoryController {
 		$history_limit = max( 10, min( 200, $history_limit ) );
 		$history       = array_slice( $history, 0, $history_limit );
 
-		update_user_meta( $user_id, self::META_KEY, $history );
+		$result = update_user_meta( $user_id, self::META_KEY, $history );
+		if ( false === $result ) {
+			error_log( sprintf( 'WPQP: Failed to record history for user %d.', $user_id ) );
+		}
 
 		wp_send_json_success( array(
 			'history' => $history,
@@ -109,11 +112,14 @@ class HistoryController {
 			$history = array();
 		}
 
-		// Filter out stale entries (deleted posts).
+		// Filter out stale entries (deleted posts). Skip non-post types (user, admin).
+		$non_post_types = array( 'user', 'admin' );
 		$original_count = count( $history );
-		$history = array_values( array_filter( $history, function ( $entry ) {
-			if ( isset( $entry['type'], $entry['id'] ) && false === get_post_status( (int) $entry['id'] ) ) {
-				return false;
+		$history = array_values( array_filter( $history, function ( $entry ) use ( $non_post_types ) {
+			if ( isset( $entry['type'], $entry['id'] ) && ! in_array( $entry['type'], $non_post_types, true ) ) {
+				if ( false === get_post_status( (int) $entry['id'] ) ) {
+					return false;
+				}
 			}
 			return true;
 		} ) );
@@ -206,6 +212,9 @@ class HistoryController {
 		$history_limit = max( 10, min( 200, $history_limit ) );
 		$history = array_slice( $history, 0, $history_limit );
 
-		update_user_meta( get_current_user_id(), self::META_KEY, $history );
+		$result = update_user_meta( get_current_user_id(), self::META_KEY, $history );
+		if ( false === $result ) {
+			error_log( sprintf( 'WPQP: Failed to track edit page visit for user %d, post %d.', get_current_user_id(), $post_id ) );
+		}
 	}
 }

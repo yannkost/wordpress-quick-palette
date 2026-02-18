@@ -77,7 +77,10 @@ class FavoritesController {
 			$action = 'added';
 		}
 
-		update_user_meta( $user_id, self::META_KEY, $favorites );
+		$result = update_user_meta( $user_id, self::META_KEY, $favorites );
+		if ( false === $result ) {
+			error_log( sprintf( 'WPQP: Failed to update favorites for user %d.', $user_id ) );
+		}
 
 		wp_send_json_success( array(
 			'action'    => $action,
@@ -107,11 +110,14 @@ class FavoritesController {
 			$favorites = array();
 		}
 
-		// Filter out stale entries (deleted posts).
+		// Filter out stale entries (deleted posts). Skip non-post types (user, admin).
+		$non_post_types = array( 'user', 'admin' );
 		$original_count = count( $favorites );
-		$favorites = array_values( array_filter( $favorites, function ( $fav ) {
-			if ( isset( $fav['type'], $fav['id'] ) && false === get_post_status( (int) $fav['id'] ) ) {
-				return false;
+		$favorites = array_values( array_filter( $favorites, function ( $fav ) use ( $non_post_types ) {
+			if ( isset( $fav['type'], $fav['id'] ) && ! in_array( $fav['type'], $non_post_types, true ) ) {
+				if ( false === get_post_status( (int) $fav['id'] ) ) {
+					return false;
+				}
 			}
 			return true;
 		} ) );
@@ -188,7 +194,10 @@ class FavoritesController {
 			}
 		}
 
-		update_user_meta( $user_id, self::META_KEY, $new_favorites );
+		$result = update_user_meta( $user_id, self::META_KEY, $new_favorites );
+		if ( false === $result ) {
+			error_log( sprintf( 'WPQP: Failed to reorder favorites for user %d.', $user_id ) );
+		}
 
 		wp_send_json_success( array(
 			'favorites' => $new_favorites,

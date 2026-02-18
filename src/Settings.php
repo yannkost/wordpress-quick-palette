@@ -168,8 +168,8 @@ class Settings {
 		$sanitized['enabled'] = ! empty( $input['enabled'] );
 
 		// Shortcut: whitelist
-		$allowed_shortcuts = array( 'ctrl+g', 'ctrl+shift+g', 'ctrl+p' );
-		$sanitized['shortcut'] = in_array( $input['shortcut'], $allowed_shortcuts, true )
+		$allowed_shortcuts = array( 'ctrl+g', 'ctrl+k', 'ctrl+/' );
+		$sanitized['shortcut'] = isset( $input['shortcut'] ) && in_array( $input['shortcut'], $allowed_shortcuts, true )
 			? $input['shortcut']
 			: $defaults['shortcut'];
 
@@ -271,9 +271,9 @@ class Settings {
 		$options  = Options::get_all();
 		$shortcut = $options['shortcut'];
 		$shortcuts = array(
-			'ctrl+g'       => 'Ctrl+G',
-			'ctrl+shift+g' => 'Ctrl+Shift+G',
-			'ctrl+p'       => 'Ctrl+P',
+			'ctrl+g' => 'Ctrl+G',
+			'ctrl+k' => 'Ctrl+K',
+			'ctrl+/' => 'Ctrl+/',
 		);
 		?>
 		<select name="<?php echo esc_attr( Options::OPTION_NAME ); ?>[shortcut]">

@@ -31,12 +31,12 @@ class SearchController {
 		$context     = isset( $_POST['context'] ) ? sanitize_text_field( wp_unslash( $_POST['context'] ) ) : 'palette';
 		$search_type = isset( $_POST['search_type'] ) ? sanitize_text_field( wp_unslash( $_POST['search_type'] ) ) : 'content';
 
-		if ( empty( $search_term ) ) {
+		if ( strlen( $search_term ) < 2 ) {
 			wp_send_json_success(
 				array(
 					'results' => new \stdClass(),
 					'meta'    => array(
-						'query'      => '',
+						'query'      => $search_term,
 						'context'    => $context,
 						'search_type' => $search_type,
 					),
@@ -46,17 +46,22 @@ class SearchController {
 
 		$results = array();
 
-		switch ( $search_type ) {
-			case 'users':
-				$results = $this->search_users( $search_term );
-				break;
-			case 'admin':
-				$results = $this->search_admin( $search_term );
-				break;
-			case 'content':
-			default:
-				$results = $this->search_content( $search_term );
-				break;
+		try {
+			switch ( $search_type ) {
+				case 'users':
+					$results = $this->search_users( $search_term );
+					break;
+				case 'admin':
+					$results = $this->search_admin( $search_term );
+					break;
+				case 'content':
+				default:
+					$results = $this->search_content( $search_term );
+					break;
+			}
+		} catch ( \Throwable $e ) {
+			error_log( sprintf( 'WPQP: Search error for type "%s", term "%s": %s', $search_type, $search_term, $e->getMessage() ) );
+			$results = array();
 		}
 
 		wp_send_json_success(
@@ -374,7 +379,10 @@ class SearchController {
 		// Check for post type specific URLs.
 		if ( strpos( $menu_url, 'edit.php?post_type=' ) !== false ) {
 			$post_type = str_replace( 'edit.php?post_type=', '', $menu_url );
-			return 'edit_' . get_post_type_object( $post_type )->cap->edit_posts;
+			$pt_obj    = get_post_type_object( $post_type );
+			if ( $pt_obj && isset( $pt_obj->cap->edit_posts ) ) {
+				return $pt_obj->cap->edit_posts;
+			}
 		}
 
 		// Default capability.

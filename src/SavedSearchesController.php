@@ -343,7 +343,7 @@ class SavedSearchesController {
 
 		$id         = isset( $_POST['id'] ) ? sanitize_key( wp_unslash( $_POST['id'] ) ) : '';
 		$label      = isset( $_POST['label'] ) ? sanitize_text_field( wp_unslash( $_POST['label'] ) ) : '';
-		$query_args = isset( $_POST['query_args'] ) ? json_decode( stripslashes( wp_unslash( $_POST['query_args'] ) ), true ) : array();
+		$query_args = isset( $_POST['query_args'] ) ? json_decode( wp_unslash( $_POST['query_args'] ), true ) : array();
 		$roles      = isset( $_POST['roles'] ) ? array_map( 'sanitize_key', wp_unslash( (array) $_POST['roles'] ) ) : array();
 
 		if ( empty( $id ) || empty( $label ) ) {

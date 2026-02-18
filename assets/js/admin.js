@@ -34,7 +34,9 @@
 		// Tab state - search type: content, users, admin
 		activeSearchType: 'content',
 		// Copy menu state
-		openCopyMenuId: null
+		openCopyMenuId: null,
+		// Abort controller for search requests
+		searchAbortController: null
 	};
 
 	// Item ID counter for ARIA
@@ -120,7 +122,7 @@
 		// Shortcut badge
 		var shortcutBadge = document.createElement('span');
 		shortcutBadge.className = 'wpqp-shortcut-badge';
-		var sc = wpqpData.shortcut || 'ctrl+k';
+		var sc = wpqpData.shortcut || 'ctrl+g';
 		shortcutBadge.textContent = isMac() ? sc.replace('ctrl', 'Cmd').replace(/\+/g, '+') : sc.replace('ctrl', 'Ctrl').replace(/\+/g, '+');
 
 		// Close button (X)
@@ -560,7 +562,7 @@
 	 * Set up keyboard shortcut listener.
 	 */
 	function setupKeyboardShortcut() {
-		var shortcut = parseShortcut(wpqpData.shortcut || 'ctrl+k');
+		var shortcut = parseShortcut(wpqpData.shortcut || 'ctrl+g');
 
 		document.addEventListener('keydown', function(e) {
 			// Skip if user is typing in an input field
@@ -618,7 +620,6 @@
 			// For now, we can't navigate without favorites loaded
 			// In Pro, favorites would be loaded on admin init
 			// Show a message that favorites need to be loaded
-			console.log('WPQP: Favorites not loaded. Open palette first to load favorites.');
 			return;
 		}
 
@@ -718,6 +719,7 @@
 		state.selectedIndex = -1;
 		state.flatItems = [];
 		state.activeSearchType = 'content';
+		state.proDataLoaded = false;
 
 		// Update tab UI
 		updateSearchTabsUI();
@@ -1044,6 +1046,11 @@
 		state.requestId++;
 		var currentRequestId = state.requestId;
 
+		// Abort previous request if still pending
+		if ( state.searchAbortController ) {
+			state.searchAbortController.abort();
+		}
+
 		var formData = new FormData();
 		formData.append('action', 'wpqp_search');
 		formData.append('_ajax_nonce', wpqpData.nonce);
@@ -1051,11 +1058,24 @@
 		formData.append('search_type', searchType || 'content');
 		formData.append('context', 'palette');
 
-		fetch(wpqpData.ajaxUrl, {
+		var fetchOptions = {
 			method: 'POST',
 			body: formData,
 			credentials: 'same-origin'
-		})
+		};
+
+		// Use AbortController for timeout if available
+		if ( typeof AbortController !== 'undefined' ) {
+			state.searchAbortController = new AbortController();
+			fetchOptions.signal = state.searchAbortController.signal;
+			setTimeout(function() {
+				if ( state.searchAbortController ) {
+					state.searchAbortController.abort();
+				}
+			}, 10000);
+		}
+
+		fetch(wpqpData.ajaxUrl, fetchOptions)
 		.then(function(response) {
 			if ( ! response.ok ) {
 				throw new Error('Network response was not ok');
@@ -1063,6 +1083,8 @@
 			return response.json();
 		})
 		.then(function(data) {
+			state.searchAbortController = null;
+
 			// Ignore stale responses
 			if ( currentRequestId !== state.requestId ) {
 				return;
@@ -1076,12 +1098,19 @@
 			}
 		})
 		.catch(function(error) {
+			state.searchAbortController = null;
+
 			// Ignore stale responses
 			if ( currentRequestId !== state.requestId ) {
 				return;
 			}
 
-			console.error('WPQP Search error:', error);
+			// Don't show error for intentional aborts (new search started)
+			if ( error && error.name === 'AbortError' ) {
+				renderError('Search timed out. Please try again.');
+				return;
+			}
+
 			renderError('Failed to perform search. Please try again.');
 		});
 	}
@@ -1247,7 +1276,6 @@
 		copyBtn.setAttribute('aria-expanded', 'false');
 		copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/></svg>';
 		copyBtn.addEventListener('click', function(e) {
-			console.log('[WPQP] Copy button clicked!');
 			e.preventDefault();
 			e.stopPropagation();
 			toggleCopyMenu(copyBtn, item);
@@ -1287,7 +1315,6 @@
 	 * Toggle copy menu for an item.
 	 */
 	function toggleCopyMenu(btn, item) {
-		console.log('[WPQP] toggleCopyMenu called, item:', item);
 		var menuId = 'copy-menu-' + item.id;
 
 		// Close any existing open menu
@@ -1360,14 +1387,12 @@
 		menu.style.left = btnRect.left + 'px';
 		menu.style.top = (btnRect.bottom + 4) + 'px';
 
-		console.log('[WPQP] Menu positioned at:', menu.style.top, menu.style.left);
 
 		// Force visibility for debugging
 		menu.style.display = 'block';
 		menu.style.visibility = 'visible';
 		menu.style.opacity = '1';
 
-		console.log('[WPQP] Menu element:', menu);
 
 		state.openCopyMenuId = menuId;
 		btn.setAttribute('aria-expanded', 'true');
@@ -1641,9 +1666,15 @@
 	 * Decode HTML entities.
 	 */
 	function decodeHtmlEntities(text) {
-		var textarea = document.createElement('textarea');
-		textarea.innerHTML = text;
-		return textarea.value;
+		if ( ! text || typeof text !== 'string' ) {
+			return '';
+		}
+		// Only decode if the text actually contains HTML entities
+		if ( text.indexOf('&') === -1 ) {
+			return text;
+		}
+		var doc = new DOMParser().parseFromString(text, 'text/html');
+		return doc.body.textContent || '';
 	}
 
 	/* =====================================================================
@@ -1655,7 +1686,6 @@
 	 * This is now available in Lite as well per user request.
 	 */
 	function renderPanels() {
-		console.log('[WPQP] renderPanels called');
 		var resultsContainer = state.elements.results;
 		if ( ! resultsContainer ) {
 			return;
@@ -1713,6 +1743,11 @@
 				var histHeadingRow = document.createElement('div');
 				histHeadingRow.className = 'wpqp-panel-heading-row';
 
+				var histIcon = document.createElement('span');
+				histIcon.className = 'wpqp-panel-heading-icon';
+				histIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+				histHeadingRow.appendChild(histIcon);
+
 				var histTitle = document.createElement('span');
 				histTitle.textContent = 'History';
 				histHeadingRow.appendChild(histTitle);
@@ -1754,6 +1789,11 @@
 				// Heading row with title
 				var favHeadingRow = document.createElement('div');
 				favHeadingRow.className = 'wpqp-panel-heading-row';
+
+				var favIcon = document.createElement('span');
+				favIcon.className = 'wpqp-panel-heading-icon';
+				favIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+				favHeadingRow.appendChild(favIcon);
 
 				var favTitle = document.createElement('span');
 				favTitle.textContent = 'Favorites';
@@ -1833,6 +1873,7 @@
 
 		itemEl._wpqpItem = normalizedItem;
 
+
 		var content = document.createElement('div');
 		content.className = 'wpqp-item-content';
 
@@ -1889,7 +1930,6 @@
 		copyBtn.setAttribute('aria-expanded', 'false');
 		copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/></svg>';
 		copyBtn.addEventListener('click', function(e) {
-			console.log('[WPQP] Panel copy button clicked!');
 			e.preventDefault();
 			e.stopPropagation();
 			toggleCopyMenu(copyBtn, normalizedItem);
@@ -1968,28 +2008,21 @@
 	 * Set up drag and drop for favorites list.
 	 */
 	function setupFavoritesDragDrop() {
-		console.log('[WPQP] setupFavoritesDragDrop called');
 		var favList = document.getElementById('wpqp-favorites-list');
-		console.log('[WPQP] favList element:', favList);
 		if ( ! favList ) {
-			console.log('[WPQP] favList not found!');
 			return;
 		}
 
 		var items = favList.querySelectorAll('.wpqp-item');
-		console.log('[WPQP] Found items:', items.length);
 
 		if (items.length === 0) {
-			console.log('[WPQP] No items found in favorites list!');
 		}
 
 		var draggedItem = null;
 
 		items.forEach(function(item) {
 			var dragHandle = item.querySelector('.wpqp-drag-handle');
-			console.log('[WPQP] dragHandle:', dragHandle);
 			if ( ! dragHandle ) {
-				console.log('[WPQP] No drag handle found!');
 				return;
 			}
 
@@ -1998,7 +2031,6 @@
 			dragHandle.style.cursor = 'grab';
 
 			dragHandle.addEventListener('dragstart', function(e) {
-				console.log('[WPQP] dragstart event fired!');
 				draggedItem = item;
 				item.classList.add('wpqp-dragging');
 				e.dataTransfer.effectAllowed = 'move';
@@ -2008,7 +2040,6 @@
 			});
 
 			dragHandle.addEventListener('dragend', function(e) {
-				console.log('[WPQP] dragend event fired!');
 				item.classList.remove('wpqp-dragging');
 				item.removeEventListener('click', preventClickDuringDrag, true);
 				draggedItem = null;
@@ -2020,7 +2051,6 @@
 			});
 
 			item.addEventListener('dragover', function(e) {
-				console.log('[WPQP] dragover event fired!');
 				e.preventDefault();
 				e.dataTransfer.dropEffect = 'move';
 				if ( draggedItem && draggedItem !== item ) {
@@ -2033,7 +2063,6 @@
 			});
 
 			item.addEventListener('drop', function(e) {
-				console.log('[WPQP] drop event fired!');
 				e.preventDefault();
 				item.classList.remove('wpqp-drag-over');
 
@@ -2059,7 +2088,6 @@
 	 * Reorder favorites after drag and drop.
 	 */
 	function reorderFavorites(draggedId, targetId) {
-		console.log('[WPQP] Reordering favorites:', draggedId, targetId);
 		// Find indices
 		var draggedIndex = -1;
 		var targetIndex = -1;
@@ -2081,7 +2109,6 @@
 		var item = state.favorites.splice(draggedIndex, 1)[0];
 		state.favorites.splice(targetIndex, 0, item);
 
-		console.log('[WPQP] New favorites order:', state.favorites);
 
 		// Re-render favorites list
 		renderPanels();
@@ -2287,7 +2314,7 @@
 
 				var histHeading = document.createElement('div');
 				histHeading.className = 'wpqp-panel-heading';
-				histHeading.textContent = 'History';
+				histHeading.innerHTML = '<span class="wpqp-panel-heading-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span> History';
 				historyPanel.appendChild(histHeading);
 
 				// Filter input
@@ -2323,6 +2350,11 @@
 				// Heading row with title
 				var favHeadingRow = document.createElement('div');
 				favHeadingRow.className = 'wpqp-panel-heading-row';
+
+				var favIcon = document.createElement('span');
+				favIcon.className = 'wpqp-panel-heading-icon';
+				favIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+				favHeadingRow.appendChild(favIcon);
 
 				var favTitle = document.createElement('span');
 				favTitle.textContent = 'Favorites';
@@ -2402,6 +2434,7 @@
 
 		itemEl._wpqpItem = normalizedItem;
 
+
 		var content = document.createElement('div');
 		content.className = 'wpqp-item-content';
 
@@ -2458,7 +2491,6 @@
 		copyBtn.setAttribute('aria-expanded', 'false');
 		copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/></svg>';
 		copyBtn.addEventListener('click', function(e) {
-			console.log('[WPQP] Panel copy button clicked!');
 			e.preventDefault();
 			e.stopPropagation();
 			toggleCopyMenu(copyBtn, normalizedItem);
