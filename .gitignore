@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
 vendor/
+!vendor/freemius/
 
 # OS files
 .DS_Store
