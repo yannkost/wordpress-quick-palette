@@ -41,10 +41,12 @@ class HistoryController {
 			return;
 		}
 
-		$type = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '';
-		$id   = isset( $_POST['id'] ) ? absint( $_POST['id'] ) : 0;
+		$type   = isset( $_POST['type'] ) ? sanitize_text_field( wp_unslash( $_POST['type'] ) ) : '';
+		$id_raw = isset( $_POST['id'] ) ? sanitize_text_field( wp_unslash( $_POST['id'] ) ) : '';
+		// Admin-type history entries use URL slugs as IDs; all other types use integer post/user IDs.
+		$id     = ( 'admin' === $type ) ? $id_raw : absint( $id_raw );
 
-		if ( empty( $type ) || empty( $id ) ) {
+		if ( empty( $type ) || ( '' === $id || 0 === $id ) ) {
 			wp_send_json_error(
 				array( 'message' => __( 'Invalid item.', 'wp-quick-palette' ) ),
 				400
@@ -63,8 +65,9 @@ class HistoryController {
 		}
 
 		// Remove existing entry with same type+id (dedup).
+		// Use string comparison so both int and slug IDs match correctly.
 		$history = array_values( array_filter( $history, function ( $entry ) use ( $type, $id ) {
-			return ! ( isset( $entry['type'], $entry['id'] ) && $entry['type'] === $type && (int) $entry['id'] === $id );
+			return ! ( isset( $entry['type'], $entry['id'] ) && $entry['type'] === $type && (string) $entry['id'] === (string) $id );
 		} ) );
 
 		// Prepend new entry.

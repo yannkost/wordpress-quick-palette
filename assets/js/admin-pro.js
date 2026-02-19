@@ -395,6 +395,8 @@
 	// Pro Data Loading
 	// =========================================================================
 
+	/* <fs_premium_only> */
+
 	/**
 	 * Load Pro data (favorites + history + saved searches) via AJAX.
 	 */
@@ -679,9 +681,13 @@
 		return itemEl;
 	};
 
+	/* </fs_premium_only> */
+
 	// =========================================================================
 	// Saved Searches
 	// =========================================================================
+
+	/* <fs_premium_only> */
 
 	/**
 	 * Delete a saved search via AJAX.
@@ -900,6 +906,8 @@
 				console.error( 'WPQP save search error:', err );
 			} );
 	};
+
+	/* </fs_premium_only> */
 
 	// =========================================================================
 	// Favorites (Star Button)

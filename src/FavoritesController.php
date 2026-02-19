@@ -173,17 +173,20 @@ class FavoritesController {
 		// Build new favorites array in the requested order
 		$new_favorites = array();
 		foreach ( $order as $item ) {
-			$id   = isset( $item['id'] ) ? absint( $item['id'] ) : 0;
-			$type = isset( $item['type'] ) ? sanitize_text_field( wp_unslash( $item['type'] ) ) : '';
+			$type   = isset( $item['type'] ) ? sanitize_text_field( wp_unslash( $item['type'] ) ) : '';
+			$id_raw = isset( $item['id'] ) ? sanitize_text_field( wp_unslash( $item['id'] ) ) : '';
+			// Admin-type favorites use URL slugs as IDs; all other types use integer post/user IDs.
+			$id     = ( 'admin' === $type ) ? $id_raw : absint( $id_raw );
 
-			if ( empty( $id ) || empty( $type ) ) {
+			if ( empty( $type ) || ( '' === $id || 0 === $id ) ) {
 				continue;
 			}
 
-			// Find existing entry to preserve extra data
+			// Find existing entry to preserve extra data.
+			// Use string comparison so both int and slug IDs match correctly.
 			$existing = null;
 			foreach ( $current_favorites as $fav ) {
-				if ( isset( $fav['id'], $fav['type'] ) && (int) $fav['id'] === $id && $fav['type'] === $type ) {
+				if ( isset( $fav['id'], $fav['type'] ) && $fav['type'] === $type && (string) $fav['id'] === (string) $id ) {
 					$existing = $fav;
 					break;
 				}

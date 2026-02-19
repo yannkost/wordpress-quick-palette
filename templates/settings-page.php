@@ -46,14 +46,14 @@ defined( 'ABSPATH' ) || exit;
 							</td>
 						</tr>
 
-						<!-- Favorites -->
+						<!-- Search Tabs -->
 						<tr>
 							<th scope="row">
-								<?php esc_html_e( 'Favorites', 'wp-quick-palette' ); ?>
+								<?php esc_html_e( 'Search Tabs', 'wp-quick-palette' ); ?>
 							</th>
 							<td>
 								<p class="description" style="margin-top: 0;">
-									<?php esc_html_e( 'Star/unstar items from the palette and see them at the top when opening with no query.', 'wp-quick-palette' ); ?>
+									<?php esc_html_e( 'Switch between Content, Users, and Admin search tabs. Use prefixes u: and a: in the search bar to jump directly to a tab.', 'wp-quick-palette' ); ?>
 								</p>
 							</td>
 						</tr>
@@ -74,10 +74,11 @@ defined( 'ABSPATH' ) || exit;
 						<tr>
 							<th scope="row">
 								<?php esc_html_e( 'Role-Based Settings', 'wp-quick-palette' ); ?>
+								<span style="display:block;font-size:10px;font-weight:400;color:#8c8f94;margin-top:2px;"><?php esc_html_e( 'Coming soon', 'wp-quick-palette' ); ?></span>
 							</th>
 							<td>
 								<p class="description" style="margin-top: 0;">
-									<?php esc_html_e( 'Configure Quick Palette behavior per user role (enabled, searchable post types, inline bar visibility).', 'wp-quick-palette' ); ?>
+									<?php esc_html_e( 'Control which roles can use Quick Palette, which post types they can search, and more. Planned for a future Pro update.', 'wp-quick-palette' ); ?>
 								</p>
 							</td>
 						</tr>
@@ -85,7 +86,7 @@ defined( 'ABSPATH' ) || exit;
 				</table>
 
 				<p style="margin-top: 20px;">
-					<a href="https://example.com/wp-quick-palette-pro" class="button button-primary" target="_blank" rel="noopener noreferrer">
+					<a href="https://wp-quick-palette.cloud/#pricing" class="button button-primary" target="_blank" rel="noopener noreferrer">
 						<?php esc_html_e( 'Upgrade to Pro', 'wp-quick-palette' ); ?>
 					</a>
 				</p>

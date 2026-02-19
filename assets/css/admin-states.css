@@ -81,6 +81,46 @@
 	font-size: var(--wpqp-font-size-sm);
 }
 
+/* "Create new post" action shown below empty-state message */
+#wpqp-palette-root .wpqp-create-action {
+	display: flex;
+	align-items: center;
+	gap: var(--wpqp-spacing-sm);
+	margin: 0 var(--wpqp-spacing-lg) var(--wpqp-spacing-md);
+	padding: var(--wpqp-spacing-sm) var(--wpqp-spacing-md);
+	border-radius: var(--wpqp-border-radius);
+	border: 1px dashed var(--wpqp-border);
+	color: var(--wpqp-text-muted);
+	font-size: var(--wpqp-font-size-sm);
+	text-decoration: none;
+	transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+	animation: wpqp-content-in var(--wpqp-duration-fade) ease both;
+	animation-delay: 60ms;
+}
+
+#wpqp-palette-root .wpqp-create-action:hover {
+	background: var(--wpqp-hover);
+	border-color: var(--wpqp-primary);
+	color: var(--wpqp-primary);
+	text-decoration: none;
+}
+
+#wpqp-palette-root .wpqp-create-action__icon {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+}
+
+#wpqp-palette-root .wpqp-create-action__icon svg {
+	width: 14px;
+	height: 14px;
+}
+
+#wpqp-palette-root .wpqp-create-action__text em {
+	font-style: normal;
+	font-weight: 600;
+}
+
 /* ==========================================================================
    Error State
    ========================================================================== */

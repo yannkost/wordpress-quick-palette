@@ -93,6 +93,13 @@
 	white-space: nowrap;
 }
 
+/* Match highlight — bold + primary color, no background */
+#wpqp-palette-root .wpqp-item-title mark.wpqp-highlight {
+	background: none;
+	color: var(--wpqp-primary);
+	font-weight: 700;
+}
+
 #wpqp-palette-root .wpqp-item-subtitle {
 	font-size: var(--wpqp-font-size-xs);
 	color: var(--wpqp-text-muted);
@@ -266,6 +273,21 @@
 .wpqp-copy-option:hover {
 	background: #e8f0fe;
 	color: #0d78f2;
+}
+
+/* Dark theme for body-appended copy menu (can't inherit from #wpqp-palette-root) */
+.wpqp-copy-menu[data-resolved-theme="dark"] {
+	background: #38434e;
+	border-color: #525a62;
+}
+
+.wpqp-copy-menu[data-resolved-theme="dark"] .wpqp-copy-option {
+	color: #e8eaed;
+}
+
+.wpqp-copy-menu[data-resolved-theme="dark"] .wpqp-copy-option:hover {
+	background: rgba(77, 166, 255, 0.12);
+	color: #4da6ff;
 }
 
 .wpqp-copy-feedback {

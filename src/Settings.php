@@ -229,7 +229,7 @@ class Settings {
 	}
 
 	public function section_search_callback() {
-		echo '<p>' . esc_html__( 'Choose which post types appear in search results.', 'wp-quick-palette' ) . '</p>';
+		echo '<p>' . esc_html__( 'Choose which post types appear in search results. Search tabs (Content / Users / Admin) are a Pro feature.', 'wp-quick-palette' ) . '</p>';
 	}
 
 	public function section_appearance_callback() {
@@ -346,7 +346,7 @@ class Settings {
 			<?php endforeach; ?>
 		</select>
 		<p class="description">
-			<?php esc_html_e( 'Choose the color scheme for the Quick Palette.', 'wp-quick-palette' ); ?>
+			<?php esc_html_e( 'Light and Dark are applied to all users — individual preferences are disabled. Auto follows the system preference and allows each user to choose their own theme from the palette settings menu.', 'wp-quick-palette' ); ?>
 		</p>
 		<?php
 	}

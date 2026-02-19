@@ -74,6 +74,17 @@
 			? sc.replace( 'ctrl', 'Cmd' ).replace( /\+/g, '+' )
 			: sc.replace( 'ctrl', 'Ctrl' ).replace( /\+/g, '+' );
 
+		// Preferences button (gear icon)
+		var prefsBtn = document.createElement( 'button' );
+		prefsBtn.className = 'wpqp-prefs-btn';
+		prefsBtn.setAttribute( 'aria-label', wpqpData.strings.preferences || 'Preferences' );
+		prefsBtn.setAttribute( 'aria-expanded', 'false' );
+		prefsBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
+		prefsBtn.addEventListener( 'click', function( e ) {
+			e.stopPropagation();
+			WPQP.togglePrefsDropdown();
+		} );
+
 		// Close button (X)
 		var closeBtn = document.createElement( 'button' );
 		closeBtn.className = 'wpqp-close-btn';
@@ -84,6 +95,7 @@
 		} );
 
 		titleRight.appendChild( shortcutBadge );
+		titleRight.appendChild( prefsBtn );
 		titleRight.appendChild( closeBtn );
 		titleBar.appendChild( titleLeft );
 		titleBar.appendChild( titleRight );
@@ -366,7 +378,13 @@
 		densitySection.appendChild( densityLabel );
 		densitySection.appendChild( densityOptions );
 
-		dropdown.appendChild( themeSection );
+		// Only show theme options when admin hasn't enforced a theme.
+		// Light/Dark in Settings = admin-enforced for all users; per-user override is disabled.
+		// Auto in Settings = users control their own preference.
+		if ( ! wpqpData.globalTheme || wpqpData.globalTheme === 'auto' ) {
+			dropdown.appendChild( themeSection );
+		}
+
 		dropdown.appendChild( densitySection );
 
 		// Append dropdown after the title bar (positioned via CSS)
@@ -377,6 +395,7 @@
 		}
 
 		WPQP.state.elements.prefsDropdown = dropdown;
+		WPQP.state.elements.prefsBtn       = titleRight ? titleRight.querySelector( '.wpqp-prefs-btn' ) : null;
 	};
 
 } )( window.WPQP );

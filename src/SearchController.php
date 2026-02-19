@@ -32,7 +32,9 @@ class SearchController {
 		$context     = isset( $_POST['context'] ) ? sanitize_text_field( wp_unslash( $_POST['context'] ) ) : 'palette';
 		$search_type = isset( $_POST['search_type'] ) ? sanitize_text_field( wp_unslash( $_POST['search_type'] ) ) : 'content';
 
-		if ( strlen( $search_term ) < 2 ) {
+		// Allow single-char queries for direct ID/slug lookups.
+		$min_length = ( 'direct' === $search_type ) ? 1 : 2;
+		if ( strlen( $search_term ) < $min_length ) {
 			wp_send_json_success(
 				array(
 					'results' => new \stdClass(),
@@ -50,6 +52,9 @@ class SearchController {
 
 		try {
 			switch ( $search_type ) {
+				case 'direct':
+					$results = $this->search_direct( $search_term );
+					break;
 				case 'users':
 					$results = $this->search_users( $search_term );
 					break;
@@ -76,6 +81,81 @@ class SearchController {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Direct lookup by numeric post ID or post slug.
+	 *
+	 * Called when the query starts with '#' (ID) or '/' (slug) on the frontend.
+	 * The prefix is stripped before sending, so this receives '123' or 'my-slug'.
+	 *
+	 * @param string $term Numeric ID or slug string.
+	 * @return array Results grouped by post type.
+	 */
+	private function search_direct( $term ) {
+		if ( is_numeric( $term ) ) {
+			$post_id = absint( $term );
+			$post    = get_post( $post_id );
+
+			if ( ! $post || 'trash' === $post->post_status ) {
+				return array();
+			}
+			if ( ! current_user_can( 'read_post', $post_id ) ) {
+				return array();
+			}
+
+			return array(
+				$post->post_type => array(
+					array(
+						'type'          => $post->post_type,
+						'id'            => $post_id,
+						'title'         => get_the_title( $post_id ),
+						'status'        => $post->post_status,
+						'modified_date' => get_post_modified_time( 'c', true, $post_id ),
+						'created_date'  => get_post_time( 'c', true, $post_id ),
+						'edit_url'      => get_edit_post_link( $post_id, 'raw' ),
+						'view_url'      => get_permalink( $post_id ),
+					),
+				),
+			);
+		}
+
+		// Slug lookup — search across all allowed post types.
+		$allowed_post_types = Options::get( 'search_post_types', array( 'post', 'page' ) );
+		$posts = get_posts(
+			array(
+				'name'           => sanitize_title( $term ),
+				'post_type'      => $allowed_post_types,
+				'post_status'    => array( 'publish', 'draft', 'private', 'pending', 'future' ),
+				'posts_per_page' => 5,
+				'fields'         => 'ids',
+			)
+		);
+
+		if ( empty( $posts ) ) {
+			return array();
+		}
+
+		$results = array();
+		foreach ( $posts as $post_id ) {
+			if ( ! current_user_can( 'read_post', $post_id ) ) {
+				continue;
+			}
+			$post_type = get_post_type( $post_id );
+
+			$results[ $post_type ][] = array(
+				'type'          => $post_type,
+				'id'            => $post_id,
+				'title'         => get_the_title( $post_id ),
+				'status'        => get_post_status( $post_id ),
+				'modified_date' => get_post_modified_time( 'c', true, $post_id ),
+				'created_date'  => get_post_time( 'c', true, $post_id ),
+				'edit_url'      => get_edit_post_link( $post_id, 'raw' ),
+				'view_url'      => get_permalink( $post_id ),
+			);
+		}
+
+		return $results;
 	}
 
 	/**
@@ -166,6 +246,14 @@ class SearchController {
 		remove_filter( 'posts_search', $title_only_filter, 10 );
 		remove_filter( 'posts_orderby', $relevance_orderby, 10 );
 
+		// Append media results for users who can upload files.
+		if ( current_user_can( 'upload_files' ) ) {
+			$media_results = $this->search_media( $search_term );
+			if ( ! empty( $media_results ) ) {
+				$results['attachment'] = $media_results;
+			}
+		}
+
 		// Append comment results for users who can moderate comments.
 		if ( current_user_can( 'moderate_comments' ) ) {
 			$comment_results = $this->search_comments( $search_term );
@@ -175,6 +263,72 @@ class SearchController {
 		}
 
 		return $results;
+	}
+
+	/**
+	 * Search media library (attachments).
+	 *
+	 * @param string $search_term Search term.
+	 * @return array Media results (flat array, keyed under 'attachment' by the caller).
+	 */
+	private function search_media( $search_term ) {
+		// Title-only filter (same pattern as search_content).
+		$title_only_filter = function ( $search, $query ) {
+			if ( $query->get( 'wpqp_title_only' ) ) {
+				global $wpdb;
+				$term = $query->get( 'wpqp_search_term' );
+				if ( ! empty( $term ) ) {
+					$like   = '%' . $wpdb->esc_like( $term ) . '%';
+					$search = $wpdb->prepare( " AND ({$wpdb->posts}.post_title LIKE %s)", $like );
+				}
+			}
+			return $search;
+		};
+		add_filter( 'posts_search', $title_only_filter, 10, 2 );
+
+		$query = new \WP_Query(
+			array(
+				'post_type'        => 'attachment',
+				'post_status'      => 'inherit',
+				's'                => $search_term,
+				'wpqp_title_only'  => true,
+				'wpqp_search_term' => $search_term,
+				'posts_per_page'   => 6,
+				'fields'           => 'ids',
+				'orderby'          => 'date',
+				'order'            => 'DESC',
+			)
+		);
+
+		remove_filter( 'posts_search', $title_only_filter, 10 );
+
+		$items = array();
+
+		if ( $query->have_posts() ) {
+			foreach ( $query->posts as $post_id ) {
+				if ( ! current_user_can( 'read_post', $post_id ) ) {
+					continue;
+				}
+
+				$title = get_the_title( $post_id );
+				if ( empty( $title ) ) {
+					$title = basename( get_attached_file( $post_id ) );
+				}
+
+				$items[] = array(
+					'type'          => 'attachment',
+					'id'            => $post_id,
+					'title'         => $title,
+					'status'        => 'publish',
+					'modified_date' => get_post_modified_time( 'c', true, $post_id ),
+					'created_date'  => get_post_time( 'c', true, $post_id ),
+					'edit_url'      => get_edit_post_link( $post_id, 'raw' ),
+					'view_url'      => wp_get_attachment_url( $post_id ),
+				);
+			}
+		}
+
+		return $items;
 	}
 
 	/**

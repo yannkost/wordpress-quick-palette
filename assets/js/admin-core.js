@@ -41,7 +41,9 @@ if ( typeof wpqpData === 'undefined' ) {
 		// Abort controller for search requests
 		searchAbortController: null,
 		// Active type filter for filter chips (set by setTypeFilter)
-		activeTypeFilter: 'all'
+		activeTypeFilter: 'all',
+		// Last searched term (used for "Create new post" action)
+		lastSearchTerm: ''
 	};
 
 	// Item ID counter for ARIA

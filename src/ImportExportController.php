@@ -214,12 +214,21 @@ class ImportExportController {
 		$sanitized = array();
 
 		foreach ( $incoming as $fav ) {
-			if ( empty( $fav['type'] ) || empty( $fav['id'] ) ) {
+			if ( empty( $fav['type'] ) || ( '' === $fav['id'] || ( ! is_string( $fav['id'] ) && 0 === (int) $fav['id'] ) ) ) {
 				continue;
 			}
+			$type   = sanitize_text_field( $fav['type'] );
+			$id_raw = sanitize_text_field( (string) $fav['id'] );
+			// Admin-type favorites use URL slugs as IDs; all other types use integer post/user IDs.
+			$id     = ( 'admin' === $type ) ? $id_raw : absint( $id_raw );
+
+			if ( '' === $id || 0 === $id ) {
+				continue;
+			}
+
 			$sanitized[] = array(
-				'type'     => sanitize_text_field( $fav['type'] ),
-				'id'       => absint( $fav['id'] ),
+				'type'     => $type,
+				'id'       => $id,
 				'title'    => isset( $fav['title'] )    ? sanitize_text_field( $fav['title'] )    : '',
 				'edit_url' => isset( $fav['edit_url'] ) ? esc_url_raw( $fav['edit_url'] )         : '',
 				'added_at' => isset( $fav['added_at'] ) ? absint( $fav['added_at'] )              : time(),
@@ -243,7 +252,7 @@ class ImportExportController {
 		foreach ( $sanitized as $fav ) {
 			$is_duplicate = false;
 			foreach ( $existing as $e ) {
-				if ( $e['type'] === $fav['type'] && (int) $e['id'] === (int) $fav['id'] ) {
+				if ( $e['type'] === $fav['type'] && (string) $e['id'] === (string) $fav['id'] ) {
 					$is_duplicate = true;
 					break;
 				}

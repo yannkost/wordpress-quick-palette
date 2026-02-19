@@ -101,11 +101,12 @@
 			}
 		}
 
-		// Debounce search (min 2 chars to match backend requirement)
+		// Debounce search (min 2 chars normally; direct search allows 1 char for #ID).
 		WPQP.state.debounceTimer = setTimeout( function() {
-			if ( term.length >= 2 ) {
+			var isDirect = WPQP.state.activeSearchType === 'direct';
+			if ( term.length >= 2 || ( isDirect && term.length >= 1 ) ) {
 				WPQP.performSearch( term, WPQP.state.activeSearchType );
-			} else if ( term.length === 1 ) {
+			} else if ( term.length === 1 && ! isDirect ) {
 				WPQP.renderHint( wpqpData.strings.typeMore );
 			}
 		}, 300 );
@@ -116,6 +117,24 @@
 	 */
 	WPQP.detectSearchPrefix = function( term ) {
 		var lowerTerm = term.toLowerCase().trim();
+
+		// #123 — direct post ID lookup.
+		if ( /^#\d+$/.test( term.trim() ) ) {
+			return {
+				prefixFound: true,
+				searchType:  'direct',
+				cleanTerm:   term.trim().substring( 1 )
+			};
+		}
+
+		// /slug — direct slug lookup (at least one char after the slash).
+		if ( term.trim().charAt( 0 ) === '/' && term.trim().length > 1 ) {
+			return {
+				prefixFound: true,
+				searchType:  'direct',
+				cleanTerm:   term.trim().substring( 1 )
+			};
+		}
 
 		if ( lowerTerm.indexOf( 'c:' ) === 0 || lowerTerm.indexOf( 'content:' ) === 0 ) {
 			return {
@@ -271,6 +290,7 @@
 	 * those globals, so we search locally instead.
 	 */
 	WPQP.performAdminSearch = function( term ) {
+		WPQP.state.lastSearchTerm = term;
 		var items    = ( wpqpData.adminMenu && wpqpData.adminMenu.length ) ? wpqpData.adminMenu : [];
 		var lower    = term.toLowerCase();
 		// Derive admin base URL from the known ajaxUrl
@@ -319,6 +339,7 @@
 			return;
 		}
 
+		WPQP.state.lastSearchTerm = term;
 		WPQP.state.requestId++;
 		var currentRequestId = WPQP.state.requestId;
 
@@ -580,7 +601,14 @@
 
 		var title = document.createElement( 'div' );
 		title.className = 'wpqp-item-title';
-		title.textContent = WPQP.decodeHtmlEntities( item.title );
+		var decodedTitle  = WPQP.decodeHtmlEntities( item.title );
+		var cleanTerm     = WPQP.state.lastSearchTerm || '';
+		var highlighted   = cleanTerm.length >= 2 ? WPQP.highlightMatch( decodedTitle, cleanTerm ) : null;
+		if ( highlighted ) {
+			title.appendChild( highlighted );
+		} else {
+			title.textContent = decodedTitle;
+		}
 
 		// Comment subtitle: "by Author on 'Post Title'"
 		if ( item.comment_author || item.parent_post_title ) {
@@ -718,12 +746,49 @@
 	};
 
 	/**
-	 * Render empty state.
+	 * Render empty state, with an optional "Create new post" suggestion.
 	 */
 	WPQP.renderEmpty = function() {
 		var resultsContainer = WPQP.state.elements.results;
 		if ( ! resultsContainer ) { return; }
-		resultsContainer.innerHTML = '<div class="wpqp-empty">' + wpqpData.strings.noResults + '</div>';
+
+		var term       = WPQP.state.lastSearchTerm || '';
+		var searchType = WPQP.state.activeSearchType;
+
+		resultsContainer.innerHTML = '';
+
+		var emptyMsg = document.createElement( 'div' );
+		emptyMsg.className = 'wpqp-empty';
+		emptyMsg.textContent = wpqpData.strings.noResults;
+		resultsContainer.appendChild( emptyMsg );
+
+		// "Create new post" suggestion — content search only, query >= 2 chars.
+		if ( searchType === 'content' && term.length >= 2 && wpqpData.postNewUrl ) {
+			var createLabel = ( wpqpData.strings && wpqpData.strings.createNewPost )
+				? wpqpData.strings.createNewPost
+				: 'Create a new post titled';
+
+			var createBtn = document.createElement( 'a' );
+			createBtn.className = 'wpqp-create-action';
+			createBtn.href = wpqpData.postNewUrl + '?post_title=' + encodeURIComponent( term );
+
+			var createIcon = document.createElement( 'span' );
+			createIcon.className = 'wpqp-create-action__icon';
+			createIcon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+
+			var createText = document.createElement( 'span' );
+			createText.className = 'wpqp-create-action__text';
+			createText.textContent = createLabel + ' ';
+
+			var createQuery = document.createElement( 'em' );
+			createQuery.textContent = '\u201c' + term + '\u201d';
+			createText.appendChild( createQuery );
+
+			createBtn.appendChild( createIcon );
+			createBtn.appendChild( createText );
+			resultsContainer.appendChild( createBtn );
+		}
+
 		WPQP.state.elements.input.setAttribute( 'aria-expanded', 'false' );
 	};
 
@@ -774,6 +839,41 @@
 		}
 		WPQP._decoderEl.innerHTML = text;
 		return WPQP._decoderEl.value;
+	};
+
+	/**
+	 * Highlight query match within plain text as a DocumentFragment.
+	 * Returns a fragment with a <mark> around the first match, or null if no match.
+	 * Safe: builds DOM nodes directly, never uses innerHTML with user content.
+	 *
+	 * @param {string} text  Decoded plain-text string.
+	 * @param {string} query Search term.
+	 * @returns {DocumentFragment|null}
+	 */
+	WPQP.highlightMatch = function( text, query ) {
+		if ( ! query || ! text ) { return null; }
+
+		var lowerText  = text.toLowerCase();
+		var lowerQuery = query.toLowerCase();
+		var idx        = lowerText.indexOf( lowerQuery );
+
+		if ( idx === -1 ) { return null; }
+
+		var frag = document.createDocumentFragment();
+
+		if ( idx > 0 ) {
+			frag.appendChild( document.createTextNode( text.substring( 0, idx ) ) );
+		}
+		var mark = document.createElement( 'mark' );
+		mark.className = 'wpqp-highlight';
+		mark.textContent = text.substring( idx, idx + query.length );
+		frag.appendChild( mark );
+
+		if ( idx + query.length < text.length ) {
+			frag.appendChild( document.createTextNode( text.substring( idx + query.length ) ) );
+		}
+
+		return frag;
 	};
 
 	/**

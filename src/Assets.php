@@ -8,7 +8,6 @@
 namespace WPQP;
 
 use WPQP\Helpers\Options;
-use WPQP\Helpers\UserMeta;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -63,20 +62,38 @@ class Assets {
 		);
 
 		// Localize data on the core handle.
-		$user_prefs  = UserMeta::get_preferences();
-		$all_options = Options::get_all();
-		$is_pro      = function_exists( 'wpqp_is_pro' ) && wpqp_is_pro();
+		// Read raw stored user prefs (without wp_parse_args defaults) so we can
+		// distinguish an explicit user choice from "never set".
+		$raw_prefs    = get_user_meta( get_current_user_id(), 'wpqp_preferences', true );
+		$raw_prefs    = is_array( $raw_prefs ) ? $raw_prefs : array();
+		$all_options  = Options::get_all();
+		$global_theme = Options::get( 'theme' );
+		$is_pro       = function_exists( 'wpqp_is_pro' ) && wpqp_is_pro();
+
+		// Theme resolution:
+		//   'light' or 'dark' in Settings = admin-enforced; applies to all users.
+		//   'auto' in Settings = let each user control their own preference.
+		if ( 'auto' !== $global_theme ) {
+			$effective_theme = $global_theme;
+		} else {
+			$effective_theme = isset( $raw_prefs['theme'] ) ? $raw_prefs['theme'] : 'auto';
+		}
+
+		// Density is always a per-user preference; global 'default_density' is the fallback.
+		$effective_density = isset( $raw_prefs['density'] ) ? $raw_prefs['density'] : Options::get( 'default_density' );
 
 		wp_localize_script(
 			'wpqp-admin-core',
 			'wpqpData',
 			array(
 				'ajaxUrl'          => admin_url( 'admin-ajax.php' ),
+				'postNewUrl'       => admin_url( 'post-new.php' ),
 				'adminMenu'        => $is_pro ? $this->get_admin_menu_data() : array(),
 				'nonce'            => wp_create_nonce( 'wpqp_search_nonce' ),
 				'shortcut'         => Options::get( 'shortcut' ),
-				'density'          => $user_prefs['density'] ?? Options::get( 'default_density' ),
-				'theme'            => $user_prefs['theme']   ?? Options::get( 'theme' ),
+				'density'          => $effective_density,
+				'theme'            => $effective_theme,
+				'globalTheme'      => $global_theme,
 				'showAdminBarIcon' => (bool) Options::get( 'show_admin_bar_icon' ),
 				'enabled'          => (bool) Options::get( 'enabled' ),
 				'isPro'            => $is_pro,
@@ -85,6 +102,7 @@ class Assets {
 					// Title bar
 					'title'            => __( 'Quick Access', 'wp-quick-palette' ),
 					'close'            => __( 'Close', 'wp-quick-palette' ),
+					'preferences'      => __( 'Preferences', 'wp-quick-palette' ),
 					'siteDefault'      => __( 'Default', 'wp-quick-palette' ),
 					// Search tabs
 					'tabContent'       => __( 'Content', 'wp-quick-palette' ),
@@ -144,6 +162,8 @@ class Assets {
 					'statusPrivate'    => __( 'Private', 'wp-quick-palette' ),
 					'statusScheduled'  => __( 'Scheduled', 'wp-quick-palette' ),
 					'statusTrash'      => __( 'Trash', 'wp-quick-palette' ),
+					// Create new action
+					'createNewPost'    => __( 'Create a new post titled', 'wp-quick-palette' ),
 					// Comment items
 					'commentBy'        => __( 'by', 'wp-quick-palette' ),
 					'commentOn'        => __( 'on', 'wp-quick-palette' ),

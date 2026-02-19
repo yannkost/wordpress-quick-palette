@@ -138,7 +138,30 @@
 }
 
 #wpqp-palette-root .wpqp-prefs-btn {
-	display: none; /* Hidden in current layout - triggered programmatically */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: 1px solid transparent;
+	background: transparent;
+	color: var(--wpqp-text-muted);
+	cursor: pointer;
+	border-radius: var(--wpqp-border-radius);
+	transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+#wpqp-palette-root .wpqp-prefs-btn:hover,
+#wpqp-palette-root .wpqp-prefs-btn[aria-expanded="true"] {
+	color: var(--wpqp-text);
+	background: var(--wpqp-hover);
+	border-color: var(--wpqp-border);
+}
+
+#wpqp-palette-root .wpqp-prefs-btn svg {
+	width: 15px;
+	height: 15px;
 }
 
 #wpqp-palette-root .wpqp-prefs-section {

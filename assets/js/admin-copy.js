@@ -80,6 +80,18 @@
 		menu.appendChild( titleOption );
 		menu.appendChild( idOption );
 
+		// Propagate the palette's resolved theme so dark mode CSS vars apply.
+		// The menu is body-level and can't inherit from #wpqp-palette-root.
+		var paletteRoot = document.getElementById( 'wpqp-palette-root' );
+		if ( paletteRoot ) {
+			var resolvedTheme = paletteRoot.getAttribute( 'data-resolved-theme' );
+			if ( ! resolvedTheme ) {
+				// Not 'auto' mode — use the explicit theme directly.
+				resolvedTheme = paletteRoot.getAttribute( 'data-theme' ) || 'light';
+			}
+			menu.setAttribute( 'data-resolved-theme', resolvedTheme );
+		}
+
 		// Append menu to body for proper fixed positioning
 		document.body.appendChild( menu );
 

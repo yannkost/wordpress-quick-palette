@@ -35,8 +35,8 @@ class Plugin {
 		new FavoritesController();
 		new HistoryController();
 
-		// Pro components.
-		if ( function_exists( 'wpqp_is_pro' ) && wpqp_is_pro() ) {
+		// Pro components — stripped from the free build by Freemius at deploy time.
+		if ( function_exists( 'wqp_fs' ) && wqp_fs()->can_use_premium_code__premium_only() ) {
 			new SavedSearchesController();
 			new DashboardWidget();
 			new ImportExportController();

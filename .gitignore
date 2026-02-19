@@ -33,3 +33,6 @@ build/
 
 # Documentation
 *.md
+
+# Website (marketing site — tracked separately or deployed independently)
+website/

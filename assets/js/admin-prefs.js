@@ -33,6 +33,9 @@
 	WPQP.openPrefsDropdown = function() {
 		WPQP.state.prefsDropdownOpen = true;
 		WPQP.state.elements.prefsDropdown.style.display = 'block';
+		if ( WPQP.state.elements.prefsBtn ) {
+			WPQP.state.elements.prefsBtn.setAttribute( 'aria-expanded', 'true' );
+		}
 	};
 
 	/**
@@ -42,6 +45,9 @@
 		WPQP.state.prefsDropdownOpen = false;
 		if ( WPQP.state.elements.prefsDropdown ) {
 			WPQP.state.elements.prefsDropdown.style.display = 'none';
+		}
+		if ( WPQP.state.elements.prefsBtn ) {
+			WPQP.state.elements.prefsBtn.setAttribute( 'aria-expanded', 'false' );
 		}
 	};
 
