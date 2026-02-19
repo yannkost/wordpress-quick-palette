@@ -24,6 +24,10 @@ class SavedSearchesController {
 	 * Initialize hooks.
 	 */
 	public function __construct() {
+		if ( ! function_exists( 'wpqp_is_pro' ) || ! wpqp_is_pro() ) {
+			return;
+		}
+
 		add_action( 'wp_ajax_wpqp_get_saved_searches', array( $this, 'ajax_get_saved_searches' ) );
 		add_action( 'wp_ajax_wpqp_execute_saved_search', array( $this, 'ajax_execute_saved_search' ) );
 		add_action( 'wp_ajax_wpqp_save_saved_search', array( $this, 'ajax_save_saved_search' ) );
@@ -49,8 +53,8 @@ class SavedSearchesController {
 	 * @param string|null $user_role Optional user role to filter by.
 	 * @return array
 	 */
-	public function get_available_searches( $user_role = null ) {
-		$built_in = $this->get_builtin_presets();
+	public static function get_available_searches( $user_role = null ) {
+		$built_in = self::get_builtin_presets();
 		$custom   = self::get_saved_searches();
 
 		// Merge built-in and custom searches
@@ -76,7 +80,7 @@ class SavedSearchesController {
 	 *
 	 * @return array
 	 */
-	private function get_builtin_presets() {
+	private static function get_builtin_presets() {
 		$presets = array(
 			array(
 				'id'         => 'draft_posts_week',
@@ -204,252 +208,272 @@ class SavedSearchesController {
 	 * AJAX handler to get saved searches for current user.
 	 */
 	public function ajax_get_saved_searches() {
-		check_ajax_referer( 'wpqp_search_nonce' );
+		try {
+			check_ajax_referer( 'wpqp_search_nonce' );
 
-		if ( ! current_user_can( 'read' ) ) {
-			wp_send_json_error(
-				array( 'message' => __( 'You do not have permission to view saved searches.', 'wp-quick-palette' ) ),
-				403
-			);
-			return;
+			if ( ! current_user_can( 'read' ) ) {
+				wp_send_json_error(
+					array( 'message' => __( 'You do not have permission to view saved searches.', 'wp-quick-palette' ) ),
+					403
+				);
+				return;
+			}
+
+			$user = wp_get_current_user();
+			$role = ! empty( $user->roles ) ? $user->roles[0] : null;
+
+			$searches = self::get_available_searches( $role );
+
+			wp_send_json_success( array( 'saved_searches' => $searches ) );
+		} catch ( \Throwable $e ) {
+			error_log( 'WPQP: SavedSearchesController ajax_get_saved_searches: ' . $e->getMessage() );
+			wp_send_json_error( array( 'message' => __( 'An unexpected error occurred.', 'wp-quick-palette' ) ), 500 );
 		}
-
-		$user  = wp_get_current_user();
-		$role  = ! empty( $user->roles ) ? $user->roles[0] : null;
-
-		$searches = $this->get_available_searches( $role );
-
-		wp_send_json_success( array( 'saved_searches' => $searches ) );
 	}
 
 	/**
 	 * AJAX handler to execute a saved search.
 	 */
 	public function ajax_execute_saved_search() {
-		check_ajax_referer( 'wpqp_search_nonce' );
+		try {
+			check_ajax_referer( 'wpqp_search_nonce' );
 
-		if ( ! current_user_can( 'read' ) ) {
-			wp_send_json_error(
-				array( 'message' => __( 'You do not have permission to search.', 'wp-quick-palette' ) ),
-				403
-			);
-			return;
-		}
-
-		$search_id = isset( $_POST['search_id'] ) ? sanitize_text_field( wp_unslash( $_POST['search_id'] ) ) : '';
-
-		if ( empty( $search_id ) ) {
-			wp_send_json_error(
-				array( 'message' => __( 'Invalid search ID.', 'wp-quick-palette' ) ),
-				400
-			);
-			return;
-		}
-
-		$user    = wp_get_current_user();
-		$role    = ! empty( $user->roles ) ? $user->roles[0] : null;
-		$searches = $this->get_available_searches( $role );
-
-		// Find the search by ID
-		$search = null;
-		foreach ( $searches as $s ) {
-			if ( $s['id'] === $search_id ) {
-				$search = $s;
-				break;
-			}
-		}
-
-		if ( ! $search ) {
-			wp_send_json_error(
-				array( 'message' => __( 'Saved search not found or access denied.', 'wp-quick-palette' ) ),
-				404
-			);
-			return;
-		}
-
-		// Execute the query
-		$query_args = isset( $search['query_args'] ) ? $search['query_args'] : array();
-
-		// Ensure required args
-		if ( empty( $query_args['post_type'] ) ) {
-			$query_args['post_type'] = 'any';
-		}
-
-		// Default posts per page
-		if ( empty( $query_args['posts_per_page'] ) ) {
-			$query_args['posts_per_page'] = 20;
-		}
-
-		// Add fields
-		$query_args['fields'] = 'ids';
-
-		// Execute query
-		$query = new \WP_Query( $query_args );
-
-		$results = array();
-
-		if ( $query->have_posts() ) {
-			foreach ( $query->posts as $post_id ) {
-				if ( ! current_user_can( 'read_post', $post_id ) ) {
-					continue;
-				}
-
-				$post_type = get_post_type( $post_id );
-
-				$results[] = array(
-					'type'          => $post_type,
-					'id'            => $post_id,
-					'title'         => get_the_title( $post_id ),
-					'status'        => get_post_status( $post_id ),
-					'modified_date' => get_post_modified_time( 'c', true, $post_id ),
-					'created_date'  => get_post_time( 'c', true, $post_id ),
-					'edit_url'      => get_edit_post_link( $post_id, 'raw' ),
-					'view_url'      => get_permalink( $post_id ),
+			if ( ! current_user_can( 'read' ) ) {
+				wp_send_json_error(
+					array( 'message' => __( 'You do not have permission to search.', 'wp-quick-palette' ) ),
+					403
 				);
+				return;
 			}
-		}
 
-		// Group results by post type
-		$grouped = array();
-		foreach ( $results as $item ) {
-			$type = $item['type'];
-			if ( ! isset( $grouped[ $type ] ) ) {
-				$grouped[ $type ] = array();
+			$search_id = isset( $_POST['search_id'] ) ? sanitize_text_field( wp_unslash( $_POST['search_id'] ) ) : '';
+
+			if ( empty( $search_id ) ) {
+				wp_send_json_error(
+					array( 'message' => __( 'Invalid search ID.', 'wp-quick-palette' ) ),
+					400
+				);
+				return;
 			}
-			$grouped[ $type ][] = $item;
-		}
 
-		wp_send_json_success(
-			array(
-				'results' => ! empty( $grouped ) ? $grouped : new \stdClass(),
-				'meta'    => array(
-					'query'      => $search['label'],
-					'context'    => 'saved_search',
-					'search_id'  => $search_id,
-					'total'      => count( $results ),
-				),
-			)
-		);
+			$user     = wp_get_current_user();
+			$role     = ! empty( $user->roles ) ? $user->roles[0] : null;
+			$searches = self::get_available_searches( $role );
+
+			// Find the search by ID
+			$search = null;
+			foreach ( $searches as $s ) {
+				if ( $s['id'] === $search_id ) {
+					$search = $s;
+					break;
+				}
+			}
+
+			if ( ! $search ) {
+				wp_send_json_error(
+					array( 'message' => __( 'Saved search not found or access denied.', 'wp-quick-palette' ) ),
+					404
+				);
+				return;
+			}
+
+			// Execute the query
+			$query_args = isset( $search['query_args'] ) ? $search['query_args'] : array();
+
+			// Ensure required args
+			if ( empty( $query_args['post_type'] ) ) {
+				$query_args['post_type'] = array( 'post', 'page' );
+			}
+
+			// Default posts per page
+			if ( empty( $query_args['posts_per_page'] ) ) {
+				$query_args['posts_per_page'] = 20;
+			}
+
+			// Add fields
+			$query_args['fields'] = 'ids';
+
+			// Execute query
+			$query = new \WP_Query( $query_args );
+
+			$results = array();
+
+			if ( $query->have_posts() ) {
+				foreach ( $query->posts as $post_id ) {
+					if ( ! current_user_can( 'read_post', $post_id ) ) {
+						continue;
+					}
+
+					$post_type = get_post_type( $post_id );
+
+					$results[] = array(
+						'type'          => $post_type,
+						'id'            => $post_id,
+						'title'         => get_the_title( $post_id ),
+						'status'        => get_post_status( $post_id ),
+						'modified_date' => get_post_modified_time( 'c', true, $post_id ),
+						'created_date'  => get_post_time( 'c', true, $post_id ),
+						'edit_url'      => get_edit_post_link( $post_id, 'raw' ),
+						'view_url'      => get_permalink( $post_id ),
+					);
+				}
+			}
+
+			// Group results by post type
+			$grouped = array();
+			foreach ( $results as $item ) {
+				$type = $item['type'];
+				if ( ! isset( $grouped[ $type ] ) ) {
+					$grouped[ $type ] = array();
+				}
+				$grouped[ $type ][] = $item;
+			}
+
+			wp_send_json_success(
+				array(
+					'results' => ! empty( $grouped ) ? $grouped : new \stdClass(),
+					'meta'    => array(
+						'query'     => $search['label'],
+						'context'   => 'saved_search',
+						'search_id' => $search_id,
+						'total'     => count( $results ),
+					),
+				)
+			);
+		} catch ( \Throwable $e ) {
+			error_log( 'WPQP: SavedSearchesController ajax_execute_saved_search: ' . $e->getMessage() );
+			wp_send_json_error( array( 'message' => __( 'An unexpected error occurred.', 'wp-quick-palette' ) ), 500 );
+		}
 	}
 
 	/**
 	 * AJAX handler to save a custom saved search.
 	 */
 	public function ajax_save_saved_search() {
-		check_ajax_referer( 'wpqp_search_nonce' );
+		try {
+			check_ajax_referer( 'wpqp_search_nonce' );
 
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error(
-				array( 'message' => __( 'You do not have permission to save searches.', 'wp-quick-palette' ) ),
-				403
-			);
-			return;
-		}
-
-		$id         = isset( $_POST['id'] ) ? sanitize_key( wp_unslash( $_POST['id'] ) ) : '';
-		$label      = isset( $_POST['label'] ) ? sanitize_text_field( wp_unslash( $_POST['label'] ) ) : '';
-		$query_args = isset( $_POST['query_args'] ) ? json_decode( wp_unslash( $_POST['query_args'] ), true ) : array();
-		$query_args = is_array( $query_args ) ? $this->sanitize_query_args( $query_args ) : array();
-		$roles      = isset( $_POST['roles'] ) ? array_map( 'sanitize_key', wp_unslash( (array) $_POST['roles'] ) ) : array();
-
-		if ( empty( $id ) || empty( $label ) ) {
-			wp_send_json_error(
-				array( 'message' => __( 'ID and label are required.', 'wp-quick-palette' ) ),
-				400
-			);
-			return;
-		}
-
-		$saved_searches = self::get_saved_searches();
-
-		// Check for duplicate ID
-		$existing_index = null;
-		foreach ( $saved_searches as $i => $search ) {
-			if ( $search['id'] === $id ) {
-				$existing_index = $i;
-				break;
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error(
+					array( 'message' => __( 'You do not have permission to save searches.', 'wp-quick-palette' ) ),
+					403
+				);
+				return;
 			}
+
+			$id         = isset( $_POST['id'] ) ? sanitize_key( wp_unslash( $_POST['id'] ) ) : '';
+			$label      = isset( $_POST['label'] ) ? sanitize_text_field( wp_unslash( $_POST['label'] ) ) : '';
+			$query_args = isset( $_POST['query_args'] ) ? json_decode( wp_unslash( $_POST['query_args'] ), true ) : array();
+			$query_args = is_array( $query_args ) ? $this->sanitize_query_args( $query_args ) : array();
+			$roles      = isset( $_POST['roles'] ) ? array_map( 'sanitize_key', wp_unslash( (array) $_POST['roles'] ) ) : array();
+
+			if ( empty( $id ) || empty( $label ) ) {
+				wp_send_json_error(
+					array( 'message' => __( 'ID and label are required.', 'wp-quick-palette' ) ),
+					400
+				);
+				return;
+			}
+
+			$saved_searches = self::get_saved_searches();
+
+			// Check for duplicate ID
+			$existing_index = null;
+			foreach ( $saved_searches as $i => $search ) {
+				if ( $search['id'] === $id ) {
+					$existing_index = $i;
+					break;
+				}
+			}
+
+			$new_search = array(
+				'id'         => $id,
+				'label'      => $label,
+				'roles'      => $roles,
+				'is_builtin' => false,
+				'query_args' => $query_args,
+			);
+
+			if ( null !== $existing_index ) {
+				$saved_searches[ $existing_index ] = $new_search;
+			} else {
+				$saved_searches[] = $new_search;
+			}
+
+			update_option( self::OPTION_NAME, $saved_searches );
+
+			wp_send_json_success(
+				array(
+					'saved_searches' => self::get_available_searches(),
+					'message'        => __( 'Saved search updated.', 'wp-quick-palette' ),
+				)
+			);
+		} catch ( \Throwable $e ) {
+			error_log( 'WPQP: SavedSearchesController ajax_save_saved_search: ' . $e->getMessage() );
+			wp_send_json_error( array( 'message' => __( 'An unexpected error occurred.', 'wp-quick-palette' ) ), 500 );
 		}
-
-		$new_search = array(
-			'id'         => $id,
-			'label'      => $label,
-			'roles'      => $roles,
-			'is_builtin' => false,
-			'query_args' => $query_args,
-		);
-
-		if ( null !== $existing_index ) {
-			$saved_searches[ $existing_index ] = $new_search;
-		} else {
-			$saved_searches[] = $new_search;
-		}
-
-		update_option( self::OPTION_NAME, $saved_searches );
-
-		wp_send_json_success(
-			array(
-				'saved_searches' => $this->get_available_searches(),
-				'message'        => __( 'Saved search updated.', 'wp-quick-palette' ),
-			)
-		);
 	}
 
 	/**
 	 * AJAX handler to delete a custom saved search.
 	 */
 	public function ajax_delete_saved_search() {
-		check_ajax_referer( 'wpqp_search_nonce' );
+		try {
+			check_ajax_referer( 'wpqp_search_nonce' );
 
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error(
-				array( 'message' => __( 'You do not have permission to delete searches.', 'wp-quick-palette' ) ),
-				403
-			);
-			return;
-		}
-
-		$id = isset( $_POST['id'] ) ? sanitize_key( wp_unslash( $_POST['id'] ) ) : '';
-
-		if ( empty( $id ) ) {
-			wp_send_json_error(
-				array( 'message' => __( 'Invalid search ID.', 'wp-quick-palette' ) ),
-				400
-			);
-			return;
-		}
-
-		$saved_searches = self::get_saved_searches();
-
-		// Find and remove the search (built-in searches cannot be deleted)
-		$found = false;
-		foreach ( $saved_searches as $i => $search ) {
-			if ( $search['id'] === $id && empty( $search['is_builtin'] ) ) {
-				unset( $saved_searches[ $i ] );
-				$found = true;
-				break;
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error(
+					array( 'message' => __( 'You do not have permission to delete searches.', 'wp-quick-palette' ) ),
+					403
+				);
+				return;
 			}
-		}
 
-		if ( ! $found ) {
-			wp_send_json_error(
-				array( 'message' => __( 'Saved search not found or cannot be deleted.', 'wp-quick-palette' ) ),
-				404
+			$id = isset( $_POST['id'] ) ? sanitize_key( wp_unslash( $_POST['id'] ) ) : '';
+
+			if ( empty( $id ) ) {
+				wp_send_json_error(
+					array( 'message' => __( 'Invalid search ID.', 'wp-quick-palette' ) ),
+					400
+				);
+				return;
+			}
+
+			$saved_searches = self::get_saved_searches();
+
+			// Find and remove the search (built-in searches cannot be deleted)
+			$found = false;
+			foreach ( $saved_searches as $i => $search ) {
+				if ( $search['id'] === $id && empty( $search['is_builtin'] ) ) {
+					unset( $saved_searches[ $i ] );
+					$found = true;
+					break;
+				}
+			}
+
+			if ( ! $found ) {
+				wp_send_json_error(
+					array( 'message' => __( 'Saved search not found or cannot be deleted.', 'wp-quick-palette' ) ),
+					404
+				);
+				return;
+			}
+
+			// Re-index array
+			$saved_searches = array_values( $saved_searches );
+
+			update_option( self::OPTION_NAME, $saved_searches );
+
+			wp_send_json_success(
+				array(
+					'saved_searches' => self::get_available_searches(),
+					'message'        => __( 'Saved search deleted.', 'wp-quick-palette' ),
+				)
 			);
-			return;
+		} catch ( \Throwable $e ) {
+			error_log( 'WPQP: SavedSearchesController ajax_delete_saved_search: ' . $e->getMessage() );
+			wp_send_json_error( array( 'message' => __( 'An unexpected error occurred.', 'wp-quick-palette' ) ), 500 );
 		}
-
-		// Re-index array
-		$saved_searches = array_values( $saved_searches );
-
-		update_option( self::OPTION_NAME, $saved_searches );
-
-		wp_send_json_success(
-			array(
-				'saved_searches' => $this->get_available_searches(),
-				'message'        => __( 'Saved search deleted.', 'wp-quick-palette' ),
-			)
-		);
 	}
 
 	/**

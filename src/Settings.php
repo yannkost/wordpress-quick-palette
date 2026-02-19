@@ -394,9 +394,7 @@ class Settings {
 		$user = wp_get_current_user();
 		$role = ! empty( $user->roles ) ? $user->roles[0] : null;
 
-		// Get the controller instance to fetch saved searches
-		$saved_searches_controller = new \WPQP\SavedSearchesController();
-		$searches = $saved_searches_controller->get_available_searches( $role );
+		$searches = \WPQP\SavedSearchesController::get_available_searches( $role );
 
 		if ( empty( $searches ) ) {
 			echo '<p class="description">' . esc_html__( 'No saved searches available for your role.', 'wp-quick-palette' ) . '</p>';

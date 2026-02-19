@@ -3,7 +3,7 @@ Contributors: yannkost
 Donate link:
 Tags: search, admin, command palette, productivity, navigation
 Requires at least: 5.8
-Tested up to: 6.7
+Tested up to: 6.8
 Stable tag: 1.2.0
 Requires PHP: 7.4
 License: GPLv2 or later
@@ -128,11 +128,10 @@ The plugin stores only essential data: your chosen settings (keyboard shortcut, 
 
 == Screenshots ==
 
-1. **Command palette open** – Press Ctrl+G to open the search overlay and instantly find any post, page, or custom post type.
-2. **Search results with type filters** – Results are organized by post type with filter chips to narrow down instantly. Status badges show publish state at a glance.
-3. **Favorites and history panels** – View your starred items and recent history side-by-side in the overlay. Star any item with one click.
-4. **Settings page** – Customize keyboard shortcut, choose searchable post types, set preferred theme and density, and manage Pro features.
-5. **Admin bar icon** – Quick access icon in the WordPress admin toolbar (optional, can be toggled in settings).
+1. **Content search (Lite)** – Press Ctrl+G to open the palette and instantly find any post, page, or custom post type. Results appear as you type with status badges and post type labels.
+2. **History & Favorites panels (Lite)** – Open the palette with no query to see your starred favorites and recent visit history side-by-side. Star any result with one click.
+3. **Content search (Pro)** – The Pro version adds search tabs (Content / Users / Admin), extended history, and the star button available on every result item.
+4. **History & Favorites panels (Pro)** – Pro panels show more history entries, drag-to-reorder favorites, and Alt+1–9 shortcut badges next to your first 9 starred items.
 
 == Changelog ==
 

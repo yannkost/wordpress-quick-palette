@@ -15,6 +15,10 @@ class DashboardWidget {
 	 * Register hooks.
 	 */
 	public function __construct() {
+		if ( ! function_exists( 'wpqp_is_pro' ) || ! wpqp_is_pro() ) {
+			return;
+		}
+
 		add_action( 'wp_dashboard_setup', array( $this, 'register_widget' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 	}
@@ -56,71 +60,78 @@ class DashboardWidget {
 	 * Render the widget content.
 	 */
 	public function render_widget() {
-		$user_id   = get_current_user_id();
-		$favorites = get_user_meta( $user_id, FavoritesController::META_KEY, true );
+		try {
+			$user_id   = get_current_user_id();
+			$favorites = get_user_meta( $user_id, FavoritesController::META_KEY, true );
 
-		if ( ! is_array( $favorites ) ) {
-			$favorites = array();
-		}
-
-		// Validate entries and remove stale ones.
-		$valid = array();
-		foreach ( $favorites as $fav ) {
-			if ( empty( $fav['id'] ) || empty( $fav['type'] ) ) {
-				continue;
+			if ( ! is_array( $favorites ) ) {
+				$favorites = array();
 			}
 
-			if ( ! $this->is_valid_entry( $fav ) ) {
-				continue;
+			// Validate entries and remove stale ones.
+			$valid = array();
+			foreach ( $favorites as $fav ) {
+				if ( empty( $fav['id'] ) || empty( $fav['type'] ) ) {
+					continue;
+				}
+
+				if ( ! $this->is_valid_entry( $fav ) ) {
+					continue;
+				}
+
+				$valid[] = $fav;
 			}
 
-			$valid[] = $fav;
-		}
-
-		if ( empty( $valid ) ) {
-			$this->render_empty();
-			return;
-		}
-
-		echo '<ul class="wpqp-dw-list">';
-
-		foreach ( $valid as $index => $fav ) {
-			$post_id    = (int) $fav['id'];
-			$post_type  = sanitize_key( $fav['type'] );
-			$title      = ! empty( $fav['title'] ) ? $fav['title'] : $this->get_item_title( $fav );
-			$edit_url   = ! empty( $fav['edit_url'] ) ? $fav['edit_url'] : $this->get_edit_url( $fav );
-			$type_label = $this->get_type_label( $post_type );
-
-			if ( empty( $edit_url ) || empty( $title ) ) {
-				continue;
+			if ( empty( $valid ) ) {
+				$this->render_empty();
+				return;
 			}
 
-			// Alt+1-9 shortcut badge for first 9 items.
-			$shortcut = ( $index < 9 )
-				? '<span class="wpqp-dw-shortcut" aria-label="' . esc_attr( sprintf( __( 'Keyboard shortcut: Alt+%d', 'wp-quick-palette' ), $index + 1 ) ) . '">Alt+' . ( $index + 1 ) . '</span>'
-				: '';
+			echo '<ul class="wpqp-dw-list">';
 
-			printf(
-				'<li class="wpqp-dw-item">
-					<a href="%1$s" class="wpqp-dw-link" title="%2$s">
-						<span class="wpqp-dw-star" aria-hidden="true">&#9733;</span>
-						<span class="wpqp-dw-title">%2$s</span>
-					</a>
-					<span class="wpqp-dw-meta">
-						<span class="wpqp-dw-type">%3$s</span>
-						%4$s
-					</span>
-				</li>',
-				esc_url( $edit_url ),
-				esc_html( $title ),
-				esc_html( $type_label ),
-				$shortcut // already escaped above
-			);
+			foreach ( $valid as $index => $fav ) {
+				$post_id    = (int) $fav['id'];
+				$post_type  = sanitize_key( $fav['type'] );
+				$title      = ! empty( $fav['title'] ) ? $fav['title'] : $this->get_item_title( $fav );
+				$edit_url   = ! empty( $fav['edit_url'] ) ? $fav['edit_url'] : $this->get_edit_url( $fav );
+				$type_label = $this->get_type_label( $post_type );
+
+				if ( empty( $edit_url ) || empty( $title ) ) {
+					continue;
+				}
+
+				// Alt+1-9 shortcut badge for first 9 items.
+				$shortcut = '';
+				if ( $index < 9 ) {
+					/* translators: %d: keyboard shortcut number (1-9) */
+					$shortcut = '<span class="wpqp-dw-shortcut" aria-label="' . esc_attr( sprintf( __( 'Keyboard shortcut: Alt+%d', 'wp-quick-palette' ), $index + 1 ) ) . '">Alt+' . ( $index + 1 ) . '</span>';
+				}
+
+				printf(
+					'<li class="wpqp-dw-item">
+						<a href="%1$s" class="wpqp-dw-link" title="%2$s">
+							<span class="wpqp-dw-star" aria-hidden="true">&#9733;</span>
+							<span class="wpqp-dw-title">%2$s</span>
+						</a>
+						<span class="wpqp-dw-meta">
+							<span class="wpqp-dw-type">%3$s</span>
+							%4$s
+						</span>
+					</li>',
+					esc_url( $edit_url ),
+					esc_html( $title ),
+					esc_html( $type_label ),
+					$shortcut // already escaped above
+				);
+			}
+
+			echo '</ul>';
+
+			$this->render_footer( count( $valid ) );
+		} catch ( \Throwable $e ) {
+			error_log( 'WPQP: DashboardWidget render_widget: ' . $e->getMessage() );
+			echo '<p>' . esc_html__( 'Unable to load favorites.', 'wp-quick-palette' ) . '</p>';
 		}
-
-		echo '</ul>';
-
-		$this->render_footer( count( $valid ) );
 	}
 
 	/**

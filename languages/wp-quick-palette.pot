@@ -1,0 +1,776 @@
+# Copyright (C) 2026 Yann Kost
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Quick Palette 1.2.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wordpress-quick-search\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-02-19T20:13:45+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: wp-quick-palette\n"
+
+#. Plugin Name of the plugin
+#: wp-quick-palette.php
+msgid "WP Quick Palette"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: wp-quick-palette.php
+msgid "https://wp-quick-palette.cloud/"
+msgstr ""
+
+#. Description of the plugin
+#: wp-quick-palette.php
+msgid "A Craft-inspired command palette and quick search for the WordPress admin."
+msgstr ""
+
+#. Author of the plugin
+#: wp-quick-palette.php
+msgid "Yann Kost"
+msgstr ""
+
+#: src/AdminBar.php:48
+#: src/Settings.php:29
+#: src/Settings.php:30
+msgid "Quick Palette"
+msgstr ""
+
+#. translators: %s: keyboard shortcut
+#: src/AdminBar.php:54
+#, php-format
+msgid "Open Quick Palette (%s)"
+msgstr ""
+
+#: src/Assets.php:103
+msgid "Quick Access"
+msgstr ""
+
+#: src/Assets.php:104
+msgid "Close"
+msgstr ""
+
+#: src/Assets.php:105
+msgid "Preferences"
+msgstr ""
+
+#: src/Assets.php:106
+msgid "Default"
+msgstr ""
+
+#: src/Assets.php:108
+msgid "Content"
+msgstr ""
+
+#: src/Assets.php:109
+msgid "Users"
+msgstr ""
+
+#: src/Assets.php:110
+#: src/Assets.php:185
+#: src/DashboardWidget.php:269
+msgid "Admin"
+msgstr ""
+
+#: src/Assets.php:111
+#: templates/settings-page.php:27
+msgid "Pro"
+msgstr ""
+
+#: src/Assets.php:113
+msgid "Search posts, pages, and more…"
+msgstr ""
+
+#: src/Assets.php:114
+#: src/Settings.php:85
+msgid "Search"
+msgstr ""
+
+#: src/Assets.php:115
+msgid "Save this search"
+msgstr ""
+
+#: src/Assets.php:116
+msgid "Saved searches"
+msgstr ""
+
+#: src/Assets.php:117
+msgid "Enter ↵"
+msgstr ""
+
+#: src/Assets.php:119
+msgid "Searching…"
+msgstr ""
+
+#: src/Assets.php:120
+msgid "No results found"
+msgstr ""
+
+#: src/Assets.php:121
+msgid "Type at least 2 characters to search"
+msgstr ""
+
+#: src/Assets.php:122
+msgid "Search Results"
+msgstr ""
+
+#: src/Assets.php:123
+msgid "results found"
+msgstr ""
+
+#: src/Assets.php:124
+msgid "Open in new tab"
+msgstr ""
+
+#: src/Assets.php:125
+msgid "Copy options"
+msgstr ""
+
+#: src/Assets.php:126
+msgid "Search timed out. Please try again."
+msgstr ""
+
+#: src/Assets.php:127
+msgid "Failed to perform search. Please try again."
+msgstr ""
+
+#: src/Assets.php:128
+msgid "An error occurred"
+msgstr ""
+
+#: src/Assets.php:130
+msgid "Copy URL"
+msgstr ""
+
+#: src/Assets.php:131
+msgid "Copy Title"
+msgstr ""
+
+#: src/Assets.php:132
+msgid "Copy ID"
+msgstr ""
+
+#: src/Assets.php:133
+msgid "URL copied!"
+msgstr ""
+
+#: src/Assets.php:134
+msgid "Title copied!"
+msgstr ""
+
+#: src/Assets.php:135
+msgid "ID copied!"
+msgstr ""
+
+#: src/Assets.php:137
+msgid "History"
+msgstr ""
+
+#: src/Assets.php:138
+msgid "My Favorites"
+msgstr ""
+
+#: src/Assets.php:139
+msgid "No history entry yet"
+msgstr ""
+
+#: src/Assets.php:140
+msgid "No favorites yet"
+msgstr ""
+
+#: src/Assets.php:141
+msgid "Start searching to see results. Star items to add favorites."
+msgstr ""
+
+#: src/Assets.php:142
+msgid "Filter history…"
+msgstr ""
+
+#: src/Assets.php:143
+msgid "Clear history"
+msgstr ""
+
+#: src/Assets.php:144
+msgid "Clear all history? This cannot be undone."
+msgstr ""
+
+#: src/Assets.php:145
+msgid "Remove this item from your favorites?"
+msgstr ""
+
+#: src/Assets.php:147
+msgid "My Saved Searches"
+msgstr ""
+
+#: src/Assets.php:148
+msgid "No saved searches yet."
+msgstr ""
+
+#: src/Assets.php:149
+msgid "Save"
+msgstr ""
+
+#: src/Assets.php:150
+msgid "Cancel"
+msgstr ""
+
+#: src/Assets.php:151
+msgid "Name your search…"
+msgstr ""
+
+#: src/Assets.php:152
+msgid "Saved!"
+msgstr ""
+
+#: src/Assets.php:154
+#: src/Settings.php:108
+msgid "Theme"
+msgstr ""
+
+#: src/Assets.php:155
+#: src/Settings.php:116
+msgid "Density"
+msgstr ""
+
+#: src/Assets.php:156
+#: src/Settings.php:336
+msgid "Light"
+msgstr ""
+
+#: src/Assets.php:157
+#: src/Settings.php:337
+msgid "Dark"
+msgstr ""
+
+#: src/Assets.php:158
+msgid "Auto"
+msgstr ""
+
+#: src/Assets.php:159
+#: src/Settings.php:358
+msgid "Normal"
+msgstr ""
+
+#: src/Assets.php:160
+#: src/Settings.php:359
+msgid "Compact"
+msgstr ""
+
+#: src/Assets.php:162
+msgid "Published"
+msgstr ""
+
+#: src/Assets.php:163
+msgid "Draft"
+msgstr ""
+
+#: src/Assets.php:164
+msgid "Pending"
+msgstr ""
+
+#: src/Assets.php:165
+msgid "Private"
+msgstr ""
+
+#: src/Assets.php:166
+msgid "Scheduled"
+msgstr ""
+
+#: src/Assets.php:167
+msgid "Trash"
+msgstr ""
+
+#: src/Assets.php:169
+msgid "Create a new post titled"
+msgstr ""
+
+#: src/Assets.php:171
+msgid "by"
+msgstr ""
+
+#: src/Assets.php:172
+msgid "on"
+msgstr ""
+
+#: src/Assets.php:174
+msgid "All"
+msgstr ""
+
+#: src/Assets.php:176
+msgid "Add to favorites"
+msgstr ""
+
+#: src/Assets.php:177
+msgid "Remove from favorites"
+msgstr ""
+
+#: src/Assets.php:178
+msgid "Delete"
+msgstr ""
+
+#: src/Assets.php:180
+msgid "Post"
+msgstr ""
+
+#: src/Assets.php:181
+msgid "Page"
+msgstr ""
+
+#: src/Assets.php:182
+msgid "Product"
+msgstr ""
+
+#: src/Assets.php:183
+msgid "Media"
+msgstr ""
+
+#: src/Assets.php:184
+#: src/DashboardWidget.php:265
+msgid "User"
+msgstr ""
+
+#: src/Assets.php:186
+#: src/DashboardWidget.php:273
+msgid "Comment"
+msgstr ""
+
+#: src/DashboardWidget.php:36
+msgid "My Favorites — Quick Palette"
+msgstr ""
+
+#. translators: %d: keyboard shortcut number (1-9)
+#: src/DashboardWidget.php:107
+#, php-format
+msgid "Keyboard shortcut: Alt+%d"
+msgstr ""
+
+#: src/DashboardWidget.php:133
+msgid "Unable to load favorites."
+msgstr ""
+
+#: src/DashboardWidget.php:142
+msgid "No favorites yet. Open the palette and star items to pin them here."
+msgstr ""
+
+#: src/DashboardWidget.php:161
+msgid "Open Palette"
+msgstr ""
+
+#. translators: %d: number of favorite items
+#: src/DashboardWidget.php:171
+#, php-format
+msgid "%d favorite"
+msgid_plural "%d favorites"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/FavoritesController.php:31
+msgid "You do not have permission to manage favorites."
+msgstr ""
+
+#: src/FavoritesController.php:44
+#: src/HistoryController.php:52
+msgid "Invalid item."
+msgstr ""
+
+#: src/FavoritesController.php:97
+#: src/FavoritesController.php:147
+#: src/FavoritesController.php:222
+#: src/HistoryController.php:103
+#: src/HistoryController.php:163
+#: src/HistoryController.php:190
+#: src/ImportExportController.php:138
+#: src/ImportExportController.php:216
+#: src/SavedSearchesController.php:230
+#: src/SavedSearchesController.php:345
+#: src/SavedSearchesController.php:413
+#: src/SavedSearchesController.php:475
+#: src/UserPreferencesController.php:67
+msgid "An unexpected error occurred."
+msgstr ""
+
+#: src/FavoritesController.php:112
+msgid "You do not have permission to view favorites."
+msgstr ""
+
+#: src/FavoritesController.php:160
+msgid "You do not have permission to reorder favorites."
+msgstr ""
+
+#: src/FavoritesController.php:170
+msgid "Invalid order data."
+msgstr ""
+
+#: src/HistoryController.php:39
+msgid "You do not have permission to record history."
+msgstr ""
+
+#: src/HistoryController.php:118
+msgid "You do not have permission to view history."
+msgstr ""
+
+#: src/HistoryController.php:176
+msgid "You do not have permission to clear history."
+msgstr ""
+
+#: src/ImportExportController.php:70
+msgid "Data exported successfully."
+msgstr ""
+
+#: src/ImportExportController.php:71
+msgid "Import complete"
+msgstr ""
+
+#: src/ImportExportController.php:72
+msgid "Import failed. Please check the file and try again."
+msgstr ""
+
+#: src/ImportExportController.php:73
+msgid "Invalid file. Please select a valid WP Quick Palette export file."
+msgstr ""
+
+#: src/ImportExportController.php:74
+msgid "This will replace all your current favorites and saved searches. Are you sure?"
+msgstr ""
+
+#: src/ImportExportController.php:75
+msgid "Please select a file or paste JSON data."
+msgstr ""
+
+#: src/ImportExportController.php:76
+msgid "favorites imported"
+msgstr ""
+
+#: src/ImportExportController.php:77
+msgid "saved searches imported"
+msgstr ""
+
+#: src/ImportExportController.php:78
+msgid "No new items were added (all items already exist)."
+msgstr ""
+
+#: src/ImportExportController.php:79
+msgid "Exporting…"
+msgstr ""
+
+#: src/ImportExportController.php:80
+msgid "Importing…"
+msgstr ""
+
+#: src/ImportExportController.php:81
+#: templates/settings-page.php:118
+msgid "Download Export File"
+msgstr ""
+
+#: src/ImportExportController.php:82
+#: templates/settings-page.php:126
+#: templates/settings-page.php:182
+msgid "Import"
+msgstr ""
+
+#: src/ImportExportController.php:97
+#: src/ImportExportController.php:151
+msgid "Permission denied."
+msgstr ""
+
+#: src/ImportExportController.php:162
+msgid "No data provided."
+msgstr ""
+
+#: src/ImportExportController.php:171
+msgid "Import data is too large (max 1MB)."
+msgstr ""
+
+#: src/ImportExportController.php:185
+msgid "Invalid export file. The file does not appear to be a valid WP Quick Palette export."
+msgstr ""
+
+#: src/SavedSearchesController.php:87
+msgid "Draft posts (last 7 days)"
+msgstr ""
+
+#: src/SavedSearchesController.php:103
+msgid "Draft pages (last 7 days)"
+msgstr ""
+
+#: src/SavedSearchesController.php:119
+msgid "Scheduled posts"
+msgstr ""
+
+#: src/SavedSearchesController.php:130
+msgid "Pending review"
+msgstr ""
+
+#: src/SavedSearchesController.php:141
+msgid "Posts without featured image"
+msgstr ""
+
+#: src/SavedSearchesController.php:158
+msgid "Pages without featured image"
+msgstr ""
+
+#: src/SavedSearchesController.php:180
+msgid "WooCommerce: On Hold orders"
+msgstr ""
+
+#: src/SavedSearchesController.php:191
+msgid "WooCommerce: Processing orders"
+msgstr ""
+
+#: src/SavedSearchesController.php:216
+msgid "You do not have permission to view saved searches."
+msgstr ""
+
+#: src/SavedSearchesController.php:243
+#: src/SearchController.php:25
+msgid "You do not have permission to search."
+msgstr ""
+
+#: src/SavedSearchesController.php:253
+#: src/SavedSearchesController.php:436
+msgid "Invalid search ID."
+msgstr ""
+
+#: src/SavedSearchesController.php:274
+msgid "Saved search not found or access denied."
+msgstr ""
+
+#: src/SavedSearchesController.php:358
+msgid "You do not have permission to save searches."
+msgstr ""
+
+#: src/SavedSearchesController.php:372
+msgid "ID and label are required."
+msgstr ""
+
+#: src/SavedSearchesController.php:408
+msgid "Saved search updated."
+msgstr ""
+
+#: src/SavedSearchesController.php:426
+msgid "You do not have permission to delete searches."
+msgstr ""
+
+#: src/SavedSearchesController.php:456
+msgid "Saved search not found or cannot be deleted."
+msgstr ""
+
+#: src/SavedSearchesController.php:470
+msgid "Saved search deleted."
+msgstr ""
+
+#: src/SearchController.php:366
+msgid "(empty comment)"
+msgstr ""
+
+#: src/Settings.php:53
+msgid "General"
+msgstr ""
+
+#: src/Settings.php:60
+msgid "Enable Quick Palette"
+msgstr ""
+
+#: src/Settings.php:68
+msgid "Keyboard Shortcut"
+msgstr ""
+
+#: src/Settings.php:76
+msgid "Admin Bar Icon"
+msgstr ""
+
+#: src/Settings.php:92
+msgid "Searchable Post Types"
+msgstr ""
+
+#: src/Settings.php:101
+msgid "Appearance"
+msgstr ""
+
+#: src/Settings.php:126
+#: templates/settings-page.php:25
+msgid "Pro Features"
+msgstr ""
+
+#: src/Settings.php:133
+#: templates/settings-page.php:39
+msgid "History Limit"
+msgstr ""
+
+#: src/Settings.php:141
+#: templates/settings-page.php:64
+msgid "Saved Searches"
+msgstr ""
+
+#: src/Settings.php:228
+msgid "Configure core Quick Palette functionality."
+msgstr ""
+
+#: src/Settings.php:232
+msgid "Choose which post types appear in search results. Search tabs (Content / Users / Admin) are a Pro feature."
+msgstr ""
+
+#: src/Settings.php:236
+msgid "Customize the look and feel of the Quick Palette."
+msgstr ""
+
+#: src/Settings.php:240
+msgid "Configure Pro features for favorites and history."
+msgstr ""
+
+#: src/Settings.php:256
+msgid "Enable the Quick Palette plugin"
+msgstr ""
+
+#: src/Settings.php:278
+msgid "Choose the keyboard shortcut to open the Quick Palette."
+msgstr ""
+
+#: src/Settings.php:294
+msgid "Show Quick Palette icon in the admin toolbar"
+msgstr ""
+
+#: src/Settings.php:327
+msgid "Select which post types should be searchable via Quick Palette."
+msgstr ""
+
+#: src/Settings.php:338
+msgid "Match Admin (Auto)"
+msgstr ""
+
+#: src/Settings.php:349
+msgid "Light and Dark are applied to all users — individual preferences are disabled. Auto follows the system preference and allows each user to choose their own theme from the palette settings menu."
+msgstr ""
+
+#: src/Settings.php:370
+msgid "Choose the default spacing for items in the Quick Palette."
+msgstr ""
+
+#: src/Settings.php:388
+msgid "Number of recent items to keep in your history (10-200)."
+msgstr ""
+
+#: src/Settings.php:400
+msgid "No saved searches available for your role."
+msgstr ""
+
+#: src/Settings.php:406
+msgid "Label"
+msgstr ""
+
+#: src/Settings.php:407
+msgid "Type"
+msgstr ""
+
+#: src/Settings.php:408
+msgid "Roles"
+msgstr ""
+
+#: src/Settings.php:416
+msgid "Built-in"
+msgstr ""
+
+#: src/Settings.php:418
+msgid "Custom"
+msgstr ""
+
+#: src/Settings.php:425
+msgid "All roles"
+msgstr ""
+
+#: src/Settings.php:435
+msgid "Built-in saved searches appear in the palette when you open it with no query. Click any saved search to instantly filter results."
+msgstr ""
+
+#: src/Settings.php:442
+msgid "Custom saved search creation coming in a future update."
+msgstr ""
+
+#: src/UserPreferencesController.php:29
+msgid "You do not have permission to save preferences."
+msgstr ""
+
+#: templates/settings-page.php:31
+msgid "Unlock additional features with WP Quick Palette Pro."
+msgstr ""
+
+#: templates/settings-page.php:44
+msgid "Number of recent items to keep in your history."
+msgstr ""
+
+#: templates/settings-page.php:52
+msgid "Search Tabs"
+msgstr ""
+
+#: templates/settings-page.php:56
+msgid "Switch between Content, Users, and Admin search tabs. Use prefixes u: and a: in the search bar to jump directly to a tab."
+msgstr ""
+
+#: templates/settings-page.php:68
+msgid "Create and save custom search presets with advanced filters (e.g., \"Draft posts updated last 7 days\")."
+msgstr ""
+
+#: templates/settings-page.php:76
+msgid "Role-Based Settings"
+msgstr ""
+
+#: templates/settings-page.php:77
+msgid "Coming soon"
+msgstr ""
+
+#: templates/settings-page.php:81
+msgid "Control which roles can use Quick Palette, which post types they can search, and more. Planned for a future Pro update."
+msgstr ""
+
+#: templates/settings-page.php:90
+msgid "Upgrade to Pro"
+msgstr ""
+
+#: templates/settings-page.php:103
+msgid "Import / Export"
+msgstr ""
+
+#: templates/settings-page.php:105
+msgid "Export your favorites and saved searches as a JSON file, then import them on another site or after a fresh install."
+msgstr ""
+
+#: templates/settings-page.php:111
+msgid "Export"
+msgstr ""
+
+#: templates/settings-page.php:122
+msgid "Exports your personal favorites. Administrators also export all custom saved searches."
+msgstr ""
+
+#: templates/settings-page.php:133
+msgid "JSON File"
+msgstr ""
+
+#: templates/settings-page.php:139
+msgid "Or paste JSON directly in the field below."
+msgstr ""
+
+#: templates/settings-page.php:146
+msgid "JSON Data"
+msgstr ""
+
+#: templates/settings-page.php:154
+msgid "Paste exported JSON here…"
+msgstr ""
+
+#: templates/settings-page.php:159
+msgid "Import Mode"
+msgstr ""
+
+#: templates/settings-page.php:164
+msgid "Merge — add new items, keep existing ones"
+msgstr ""
+
+#: templates/settings-page.php:169
+msgid "Replace — overwrite all existing favorites and saved searches"
+msgstr ""

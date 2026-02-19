@@ -43,8 +43,19 @@
 			}
 			WPQP.state.elements.historyPanel.style.display   = 'flex';
 			WPQP.state.elements.favoritesPanel.style.display = 'flex';
-			WPQP.state.elements.historyPanel.innerHTML   = '<div class="wpqp-empty wpqp-empty--panel">' + wpqpData.strings.noHistory + '</div>';
-			WPQP.state.elements.favoritesPanel.innerHTML = '<div class="wpqp-empty wpqp-empty--panel">' + wpqpData.strings.noFavorites + '</div>';
+			// Keep header visible, show empty body below it
+			WPQP.state.elements.historyPanel.innerHTML = '';
+			WPQP.state.elements.historyPanel.appendChild( WPQP._buildPanelHeading( wpqpData.strings.history, 'history' ) );
+			var hEmptyAll = document.createElement( 'div' );
+			hEmptyAll.className = 'wpqp-empty wpqp-empty--panel';
+			hEmptyAll.textContent = wpqpData.strings.noHistory;
+			WPQP.state.elements.historyPanel.appendChild( hEmptyAll );
+			WPQP.state.elements.favoritesPanel.innerHTML = '';
+			WPQP.state.elements.favoritesPanel.appendChild( WPQP._buildPanelHeading( wpqpData.strings.favorites, 'favorites' ) );
+			var fEmptyAll = document.createElement( 'div' );
+			fEmptyAll.className = 'wpqp-empty wpqp-empty--panel';
+			fEmptyAll.textContent = wpqpData.strings.noFavorites;
+			WPQP.state.elements.favoritesPanel.appendChild( fEmptyAll );
 			return;
 		}
 
@@ -77,6 +88,13 @@
 				} );
 
 				historyPanel.appendChild( histList );
+			} else {
+				historyPanel.innerHTML = '';
+				historyPanel.appendChild( WPQP._buildPanelHeading( wpqpData.strings.history, 'history' ) );
+				var hEmptyPartial = document.createElement( 'div' );
+				hEmptyPartial.className = 'wpqp-empty wpqp-empty--panel';
+				hEmptyPartial.textContent = wpqpData.strings.noHistory;
+				historyPanel.appendChild( hEmptyPartial );
 			}
 
 			// Favorites column
@@ -105,6 +123,13 @@
 
 				favoritesPanel.appendChild( favList );
 				WPQP.setupFavoritesDragDrop();
+			} else {
+				favoritesPanel.innerHTML = '';
+				favoritesPanel.appendChild( WPQP._buildPanelHeading( wpqpData.strings.favorites, 'favorites' ) );
+				var fEmptyPartial = document.createElement( 'div' );
+				fEmptyPartial.className = 'wpqp-empty wpqp-empty--panel';
+				fEmptyPartial.textContent = wpqpData.strings.noFavorites;
+				favoritesPanel.appendChild( fEmptyPartial );
 			}
 		} else {
 			historyPanel.style.display   = 'none';
@@ -507,8 +532,19 @@
 			}
 			WPQP.state.elements.historyPanel.style.display   = 'flex';
 			WPQP.state.elements.favoritesPanel.style.display = 'flex';
-			WPQP.state.elements.historyPanel.innerHTML   = '<div class="wpqp-empty wpqp-empty--panel">' + wpqpData.strings.noHistory + '</div>';
-			WPQP.state.elements.favoritesPanel.innerHTML = '<div class="wpqp-empty wpqp-empty--panel">' + wpqpData.strings.noFavorites + '</div>';
+			// Keep header visible, show empty body below it
+			WPQP.state.elements.historyPanel.innerHTML = '';
+			WPQP.state.elements.historyPanel.appendChild( WPQP._buildPanelHeading( wpqpData.strings.history, 'history' ) );
+			var hEmptyAll = document.createElement( 'div' );
+			hEmptyAll.className = 'wpqp-empty wpqp-empty--panel';
+			hEmptyAll.textContent = wpqpData.strings.noHistory;
+			WPQP.state.elements.historyPanel.appendChild( hEmptyAll );
+			WPQP.state.elements.favoritesPanel.innerHTML = '';
+			WPQP.state.elements.favoritesPanel.appendChild( WPQP._buildPanelHeading( wpqpData.strings.favorites, 'favorites' ) );
+			var fEmptyAll = document.createElement( 'div' );
+			fEmptyAll.className = 'wpqp-empty wpqp-empty--panel';
+			fEmptyAll.textContent = wpqpData.strings.noFavorites;
+			WPQP.state.elements.favoritesPanel.appendChild( fEmptyAll );
 			return;
 		}
 
@@ -541,6 +577,13 @@
 				} );
 
 				historyPanel.appendChild( histList );
+			} else {
+				historyPanel.innerHTML = '';
+				historyPanel.appendChild( WPQP._buildPanelHeading( wpqpData.strings.history, 'history' ) );
+				var hProEmpty = document.createElement( 'div' );
+				hProEmpty.className = 'wpqp-empty wpqp-empty--panel';
+				hProEmpty.textContent = wpqpData.strings.noHistory;
+				historyPanel.appendChild( hProEmpty );
 			}
 
 			// Favorites column
@@ -568,6 +611,13 @@
 
 				favoritesPanel.appendChild( favList );
 				WPQP.setupFavoritesDragDrop();
+			} else {
+				favoritesPanel.innerHTML = '';
+				favoritesPanel.appendChild( WPQP._buildPanelHeading( wpqpData.strings.favorites, 'favorites' ) );
+				var fProEmpty = document.createElement( 'div' );
+				fProEmpty.className = 'wpqp-empty wpqp-empty--panel';
+				fProEmpty.textContent = wpqpData.strings.noFavorites;
+				favoritesPanel.appendChild( fProEmpty );
 			}
 		} else {
 			historyPanel.style.display   = 'none';
@@ -755,9 +805,6 @@
 						}
 					}
 
-					if ( hasResults ) {
-						WPQP.hidePanels();
-					}
 					WPQP.renderResults( WPQP.state.results );
 				} else {
 					WPQP.renderError( data.data && data.data.message ? data.data.message : wpqpData.strings.searchError );
@@ -830,7 +877,7 @@
 
 			var deleteBtn = document.createElement( 'button' );
 			deleteBtn.className = 'wpqp-saved-dropdown-delete';
-			deleteBtn.setAttribute( 'aria-label', 'Delete' );
+			deleteBtn.setAttribute( 'aria-label', wpqpData.strings.deleteItem || 'Delete' );
 			deleteBtn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
 			deleteBtn.addEventListener( 'click', function( e ) {
 				e.preventDefault();
@@ -920,7 +967,7 @@
 		var btn = document.createElement( 'button' );
 		btn.className = 'wpqp-star-btn' + ( isStarred ? ' wpqp-star-btn--active' : '' );
 		btn.setAttribute( 'type', 'button' );
-		btn.setAttribute( 'aria-label', isStarred ? 'Remove from favorites' : 'Add to favorites' );
+		btn.setAttribute( 'aria-label', isStarred ? wpqpData.strings.removeFavorite : wpqpData.strings.addFavorite );
 		btn.innerHTML = isStarred
 			? '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
 			: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
@@ -938,6 +985,13 @@
 	 * Toggle favorite via AJAX.
 	 */
 	WPQP.toggleFavorite = function( item, btn ) {
+		// If the item is already favorited, confirm before removing.
+		if ( WPQP.isItemFavorited( item.type, item.id ) ) {
+			if ( ! window.confirm( wpqpData.strings.confirmRemoveFavorite || 'Remove from favorites?' ) ) {
+				return;
+			}
+		}
+
 		var formData = new FormData();
 		formData.append( 'action', 'wpqp_toggle_favorite' );
 		formData.append( '_ajax_nonce', wpqpData.nonce );
@@ -961,7 +1015,7 @@
 					btn.innerHTML = isNowFav
 						? '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
 						: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
-					btn.setAttribute( 'aria-label', isNowFav ? 'Remove from favorites' : 'Add to favorites' );
+					btn.setAttribute( 'aria-label', isNowFav ? wpqpData.strings.removeFavorite : wpqpData.strings.addFavorite );
 
 					// Re-render panels if no active search
 					if ( WPQP.state.searchTerm === '' ) {
@@ -996,6 +1050,39 @@
 	// =========================================================================
 	// History
 	// =========================================================================
+
+	/**
+	 * Clear all history entries via AJAX.
+	 */
+	WPQP.clearHistory = function() {
+		if ( ! window.confirm( wpqpData.strings.confirmClearHistory || 'Clear all history?' ) ) {
+			return;
+		}
+
+		var formData = new FormData();
+		formData.append( 'action', 'wpqp_clear_history' );
+		formData.append( '_ajax_nonce', wpqpData.nonce );
+
+		fetch( wpqpData.ajaxUrl, {
+			method:      'POST',
+			body:        formData,
+			credentials: 'same-origin'
+		} )
+			.then( function( r ) { return r.json(); } )
+			.then( function( data ) {
+				if ( data.success ) {
+					WPQP.state.history = [];
+					if ( wpqpData.isPro ) {
+						WPQP.renderProSections();
+					} else {
+						WPQP.renderPanels();
+					}
+				}
+			} )
+			.catch( function( err ) {
+				console.error( 'WPQP clear history error:', err );
+			} );
+	};
 
 	/**
 	 * Record a history entry via AJAX (fire and forget).
@@ -1089,6 +1176,22 @@
 		var titleSpan = document.createElement( 'span' );
 		titleSpan.textContent = label;
 		headingRow.appendChild( titleSpan );
+
+		// Clear history button — only shown in the history panel header.
+		if ( type === 'history' ) {
+			var clearBtn = document.createElement( 'button' );
+			clearBtn.className = 'wpqp-panel-clear-btn';
+			clearBtn.setAttribute( 'type', 'button' );
+			clearBtn.setAttribute( 'aria-label', wpqpData.strings.clearHistory || 'Clear history' );
+			clearBtn.setAttribute( 'title', wpqpData.strings.clearHistory || 'Clear history' );
+			clearBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+			clearBtn.addEventListener( 'click', function( e ) {
+				e.preventDefault();
+				e.stopPropagation();
+				WPQP.clearHistory();
+			} );
+			headingRow.appendChild( clearBtn );
+		}
 
 		heading.appendChild( headingRow );
 

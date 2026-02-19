@@ -97,7 +97,7 @@ class Assets {
 				'showAdminBarIcon' => (bool) Options::get( 'show_admin_bar_icon' ),
 				'enabled'          => (bool) Options::get( 'enabled' ),
 				'isPro'            => $is_pro,
-				'historyLimit'     => (int) $all_options['pro']['history_limit'],
+				'historyLimit'     => isset( $all_options['pro']['history_limit'] ) ? (int) $all_options['pro']['history_limit'] : 50,
 				'strings'          => array(
 					// Title bar
 					'title'            => __( 'Quick Access', 'wp-quick-palette' ),
@@ -136,10 +136,13 @@ class Assets {
 					// Panels
 					'history'          => __( 'History', 'wp-quick-palette' ),
 					'favorites'        => __( 'My Favorites', 'wp-quick-palette' ),
-					'noHistory'        => __( 'No history yet', 'wp-quick-palette' ),
+					'noHistory'        => __( 'No history entry yet', 'wp-quick-palette' ),
 					'noFavorites'      => __( 'No favorites yet', 'wp-quick-palette' ),
 					'startSearching'   => __( 'Start searching to see results. Star items to add favorites.', 'wp-quick-palette' ),
 					'filterHistory'    => __( 'Filter history…', 'wp-quick-palette' ),
+				'clearHistory'     => __( 'Clear history', 'wp-quick-palette' ),
+				'confirmClearHistory'   => __( 'Clear all history? This cannot be undone.', 'wp-quick-palette' ),
+				'confirmRemoveFavorite' => __( 'Remove this item from your favorites?', 'wp-quick-palette' ),
 					// Saved searches
 					'mySavedSearches'  => __( 'My Saved Searches', 'wp-quick-palette' ),
 					'noSavedSearches'  => __( 'No saved searches yet.', 'wp-quick-palette' ),
@@ -169,6 +172,10 @@ class Assets {
 					'commentOn'        => __( 'on', 'wp-quick-palette' ),
 					// Filter chips
 					'filterAll'        => __( 'All', 'wp-quick-palette' ),
+					// Favorites / star button
+					'addFavorite'      => __( 'Add to favorites', 'wp-quick-palette' ),
+					'removeFavorite'   => __( 'Remove from favorites', 'wp-quick-palette' ),
+					'deleteItem'       => __( 'Delete', 'wp-quick-palette' ),
 					// Type labels
 					'typePost'         => __( 'Post', 'wp-quick-palette' ),
 					'typePage'         => __( 'Page', 'wp-quick-palette' ),

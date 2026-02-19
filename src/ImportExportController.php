@@ -28,6 +28,10 @@ class ImportExportController {
 	 * Register hooks.
 	 */
 	public function __construct() {
+		if ( ! function_exists( 'wpqp_is_pro' ) || ! wpqp_is_pro() ) {
+			return;
+		}
+
 		add_action( 'wp_ajax_wpqp_export_data', array( $this, 'ajax_export' ) );
 		add_action( 'wp_ajax_wpqp_import_data', array( $this, 'ajax_import' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_settings_script' ) );
@@ -85,122 +89,132 @@ class ImportExportController {
 	 * AJAX handler: export favorites and custom saved searches as JSON.
 	 */
 	public function ajax_export() {
-		check_ajax_referer( self::NONCE_ACTION );
+		try {
+			check_ajax_referer( self::NONCE_ACTION );
 
-		if ( ! current_user_can( 'read' ) ) {
-			wp_send_json_error(
-				array( 'message' => __( 'Permission denied.', 'wp-quick-palette' ) ),
-				403
-			);
-			return;
-		}
-
-		$user_id   = get_current_user_id();
-		$favorites = get_user_meta( $user_id, FavoritesController::META_KEY, true );
-
-		if ( ! is_array( $favorites ) ) {
-			$favorites = array();
-		}
-
-		// Only admins export saved searches (they are site-wide, not per-user).
-		$saved_searches = array();
-		if ( current_user_can( 'manage_options' ) ) {
-			$all_saved = get_option( SavedSearchesController::OPTION_NAME );
-			if ( is_array( $all_saved ) ) {
-				// Exclude built-in presets — they are always present and cannot be imported.
-				$saved_searches = array_values(
-					array_filter(
-						$all_saved,
-						function ( $s ) {
-							return empty( $s['is_builtin'] );
-						}
-					)
+			if ( ! current_user_can( 'read' ) ) {
+				wp_send_json_error(
+					array( 'message' => __( 'Permission denied.', 'wp-quick-palette' ) ),
+					403
 				);
+				return;
 			}
+
+			$user_id   = get_current_user_id();
+			$favorites = get_user_meta( $user_id, FavoritesController::META_KEY, true );
+
+			if ( ! is_array( $favorites ) ) {
+				$favorites = array();
+			}
+
+			// Only admins export saved searches (they are site-wide, not per-user).
+			$saved_searches = array();
+			if ( current_user_can( 'manage_options' ) ) {
+				$all_saved = get_option( SavedSearchesController::OPTION_NAME );
+				if ( is_array( $all_saved ) ) {
+					// Exclude built-in presets — they are always present and cannot be imported.
+					$saved_searches = array_values(
+						array_filter(
+							$all_saved,
+							function ( $s ) {
+								return empty( $s['is_builtin'] );
+							}
+						)
+					);
+				}
+			}
+
+			$payload = array(
+				'plugin'         => 'wp-quick-palette',
+				'export_version' => self::EXPORT_VERSION,
+				'exported_at'    => gmdate( 'c' ),
+				'favorites'      => $favorites,
+				'saved_searches' => $saved_searches,
+			);
+
+			wp_send_json_success( array( 'data' => $payload ) );
+		} catch ( \Throwable $e ) {
+			error_log( 'WPQP: ImportExportController ajax_export: ' . $e->getMessage() );
+			wp_send_json_error( array( 'message' => __( 'An unexpected error occurred.', 'wp-quick-palette' ) ), 500 );
 		}
-
-		$payload = array(
-			'plugin'         => 'wp-quick-palette',
-			'export_version' => self::EXPORT_VERSION,
-			'exported_at'    => gmdate( 'c' ),
-			'favorites'      => $favorites,
-			'saved_searches' => $saved_searches,
-		);
-
-		wp_send_json_success( array( 'data' => $payload ) );
 	}
 
 	/**
 	 * AJAX handler: import favorites and saved searches from JSON payload.
 	 */
 	public function ajax_import() {
-		check_ajax_referer( self::NONCE_ACTION );
+		try {
+			check_ajax_referer( self::NONCE_ACTION );
 
-		if ( ! current_user_can( 'read' ) ) {
-			wp_send_json_error(
-				array( 'message' => __( 'Permission denied.', 'wp-quick-palette' ) ),
-				403
+			if ( ! current_user_can( 'read' ) ) {
+				wp_send_json_error(
+					array( 'message' => __( 'Permission denied.', 'wp-quick-palette' ) ),
+					403
+				);
+				return;
+			}
+
+			$raw_json = isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$mode     = isset( $_POST['mode'] ) ? sanitize_key( wp_unslash( $_POST['mode'] ) ) : 'merge';
+
+			if ( empty( $raw_json ) ) {
+				wp_send_json_error(
+					array( 'message' => __( 'No data provided.', 'wp-quick-palette' ) ),
+					400
+				);
+				return;
+			}
+
+			// Enforce a 1MB size limit to prevent memory exhaustion.
+			if ( strlen( $raw_json ) > 1048576 ) {
+				wp_send_json_error(
+					array( 'message' => __( 'Import data is too large (max 1MB).', 'wp-quick-palette' ) ),
+					413
+				);
+				return;
+			}
+
+			$payload = json_decode( $raw_json, true );
+
+			if (
+				! is_array( $payload ) ||
+				empty( $payload['plugin'] ) ||
+				'wp-quick-palette' !== $payload['plugin']
+			) {
+				wp_send_json_error(
+					array( 'message' => __( 'Invalid export file. The file does not appear to be a valid WP Quick Palette export.', 'wp-quick-palette' ) ),
+					422
+				);
+				return;
+			}
+
+			$imported_favorites = 0;
+			$imported_searches  = 0;
+
+			// Import favorites (always for the current user).
+			if ( ! empty( $payload['favorites'] ) && is_array( $payload['favorites'] ) ) {
+				$imported_favorites = $this->import_favorites( $payload['favorites'], $mode );
+			}
+
+			// Import saved searches (admins only — site-wide data).
+			if (
+				current_user_can( 'manage_options' ) &&
+				! empty( $payload['saved_searches'] ) &&
+				is_array( $payload['saved_searches'] )
+			) {
+				$imported_searches = $this->import_saved_searches( $payload['saved_searches'], $mode );
+			}
+
+			wp_send_json_success(
+				array(
+					'imported_favorites'      => $imported_favorites,
+					'imported_saved_searches' => $imported_searches,
+				)
 			);
-			return;
+		} catch ( \Throwable $e ) {
+			error_log( 'WPQP: ImportExportController ajax_import: ' . $e->getMessage() );
+			wp_send_json_error( array( 'message' => __( 'An unexpected error occurred.', 'wp-quick-palette' ) ), 500 );
 		}
-
-		$raw_json = isset( $_POST['data'] ) ? wp_unslash( $_POST['data'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$mode     = isset( $_POST['mode'] ) ? sanitize_key( wp_unslash( $_POST['mode'] ) ) : 'merge';
-
-		if ( empty( $raw_json ) ) {
-			wp_send_json_error(
-				array( 'message' => __( 'No data provided.', 'wp-quick-palette' ) ),
-				400
-			);
-			return;
-		}
-
-		// Enforce a 1MB size limit to prevent memory exhaustion.
-		if ( strlen( $raw_json ) > 1048576 ) {
-			wp_send_json_error(
-				array( 'message' => __( 'Import data is too large (max 1MB).', 'wp-quick-palette' ) ),
-				413
-			);
-			return;
-		}
-
-		$payload = json_decode( $raw_json, true );
-
-		if (
-			! is_array( $payload ) ||
-			empty( $payload['plugin'] ) ||
-			'wp-quick-palette' !== $payload['plugin']
-		) {
-			wp_send_json_error(
-				array( 'message' => __( 'Invalid export file. The file does not appear to be a valid WP Quick Palette export.', 'wp-quick-palette' ) ),
-				422
-			);
-			return;
-		}
-
-		$imported_favorites = 0;
-		$imported_searches  = 0;
-
-		// Import favorites (always for the current user).
-		if ( ! empty( $payload['favorites'] ) && is_array( $payload['favorites'] ) ) {
-			$imported_favorites = $this->import_favorites( $payload['favorites'], $mode );
-		}
-
-		// Import saved searches (admins only — site-wide data).
-		if (
-			current_user_can( 'manage_options' ) &&
-			! empty( $payload['saved_searches'] ) &&
-			is_array( $payload['saved_searches'] )
-		) {
-			$imported_searches = $this->import_saved_searches( $payload['saved_searches'], $mode );
-		}
-
-		wp_send_json_success(
-			array(
-				'imported_favorites'      => $imported_favorites,
-				'imported_saved_searches' => $imported_searches,
-			)
-		);
 	}
 
 	/**
