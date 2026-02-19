@@ -37,7 +37,7 @@ Settings are under **Settings → Quick Palette**.
 
 ## Reporting Issues
 
-Use the [GitHub Issues](../../issues) tab. Please include your WordPress version, PHP version, and steps to reproduce.
+Use the [GitHub Issues](https://github.com/yannkost/wordpress-quick-palette/issues) tab. Please include your WordPress version, PHP version, and steps to reproduce.
 
 For general support, use the [WordPress.org support forum](https://wordpress.org/support/plugin/wp-quick-palette/).
 

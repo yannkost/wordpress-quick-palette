@@ -86,7 +86,7 @@ defined( 'ABSPATH' ) || exit;
 				</table>
 
 				<p style="margin-top: 20px;">
-					<a href="https://wp-quick-palette.cloud/#pricing" class="button button-primary" target="_blank" rel="noopener noreferrer">
+					<a href="https://checkout.freemius.com/plugin/24659/plan/40944/" class="button button-primary" target="_blank" rel="noopener noreferrer">
 						<?php esc_html_e( 'Upgrade to Pro', 'wp-quick-palette' ); ?>
 					</a>
 				</p>

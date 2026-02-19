@@ -3,7 +3,7 @@
  * Plugin Name: WP Quick Palette
  * Plugin URI:  https://wp-quick-palette.cloud/
  * Description: A Craft-inspired command palette and quick search for the WordPress admin.
- * Version:     1.2.0
+ * Version:     1.2.1
  * Author:      Yann Kost
  * Author URI:  https://wp-quick-palette.cloud/
  * License:     GPLv2 or later
@@ -76,7 +76,7 @@ if ( function_exists( 'wqp_fs' ) ) {
 	// Plugin bootstrap
 	// =========================================================================
 
-	define( 'WPQP_VERSION', '1.2.0' );
+	define( 'WPQP_VERSION', '1.2.1' );
 	define( 'WPQP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 	define( 'WPQP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 	define( 'WPQP_PLUGIN_FILE', __FILE__ );

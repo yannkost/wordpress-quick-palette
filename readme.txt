@@ -4,7 +4,7 @@ Donate link:
 Tags: search, admin, command palette, productivity, navigation
 Requires at least: 5.8
 Tested up to: 6.8
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -135,6 +135,10 @@ The plugin stores only essential data: your chosen settings (keyboard shortcut, 
 
 == Changelog ==
 
+= 1.2.1 =
+
+* Fix: Updated Pro upgrade link to correct Freemius checkout URL.
+
 = 1.2.0 – Lite Expansion & Pro Foundation =
 
 **New Lite Features:**
@@ -196,6 +200,9 @@ The plugin stores only essential data: your chosen settings (keyboard shortcut, 
 * Full WordPress.org compatibility (WP 5.8+, PHP 7.4+)
 
 == Upgrade Notice ==
+
+= 1.2.1 =
+Minor fix: corrected Pro upgrade link.
 
 = 1.2.0 =
 Big update! Favorites and History are now free (moved from Pro to Lite). New: type filter chips, comments search, copy actions, drag-to-reorder favorites, full internationalization, and more. Pro gets dashboard widget, import/export, and admin screens search.
